@@ -227,7 +227,6 @@
                 <a href="#" class="sidebar-link">
                     <i class="bi bi-people-fill"></i>
                     <span>Gestión de Plantilla</span>
-                    <span class="badge bg-secondary ms-auto" style="font-size: 0.65rem;">DUMMY</span>
                 </a>
             </li>
             <li>
@@ -343,10 +342,7 @@
 
                         <!-- Rango de Edad (Visual/Faux) -->
                         <div class="col-md-3">
-                            <label for="edad" class="form-label text-muted fw-medium small d-flex justify-content-between">
-                                <span>Rango de Edad</span>
-                                <span class="badge bg-secondary-subtle text-muted" style="font-size: 0.55rem;">Simulado</span>
-                            </label>
+                            <label for="edad" class="form-label text-muted fw-medium small">Rango de Edad</label>
                             <select class="form-select text-muted" id="edad" name="edad">
                                 <option value="todos">Todos los rangos</option>
                                 <option value="promesas">16 - 21 años (Sub-21)</option>
@@ -357,10 +353,7 @@
 
                         <!-- Nacionalidad (Visual/Faux) -->
                         <div class="col-md-3">
-                            <label for="nacionalidad" class="form-label text-muted fw-medium small d-flex justify-content-between">
-                                <span>Nacionalidad</span>
-                                <span class="badge bg-secondary-subtle text-muted" style="font-size: 0.55rem;">Simulado</span>
-                            </label>
+                            <label for="nacionalidad" class="form-label text-muted fw-medium small">Nacionalidad</label>
                             <select class="form-select text-muted" id="nacionalidad" name="nacionalidad">
                                 <option value="todas">Todas las nacionalidades</option>
                                 <option value="es">Española</option>
@@ -372,12 +365,9 @@
 
                         <!-- Liga (Cascading Dropdown 1) -->
                         <div class="col-md-3">
-                            <label for="liga" class="form-label text-light fw-medium small d-flex justify-content-between">
-                                <span>Liga Reguladora</span>
-                                <span class="text-info" style="font-size: 0.65rem;">Cascada</span>
-                            </label>
+                            <label for="liga" class="form-label text-light fw-medium small">Seleccionar Liga</label>
                             <select id="liga" class="form-select" name="liga">
-                                <option value="">Seleccione Liga...</option>
+                                <option value="">Seleccione una opción...</option>
                                 <option value="laliga">LaLiga EA Sports</option>
                                 <option value="premier">Premier League</option>
                                 <option value="seriea">Serie A TIM</option>
@@ -386,12 +376,9 @@
 
                         <!-- Club (Cascading Dropdown 2) -->
                         <div class="col-md-3">
-                            <label for="clubes" class="form-label text-light fw-medium small d-flex justify-content-between">
-                                <span>Filtro por Club</span>
-                                <span class="text-info" style="font-size: 0.65rem;">Cascada</span>
-                            </label>
+                            <label for="clubes" class="form-label text-light fw-medium small">Filtro por Club</label>
                             <select id="clubes" class="form-select" name="clubes" disabled>
-                                <option value="">Seleccione liga primero...</option>
+                                <option value="">Seleccione una opción...</option>
                             </select>
                         </div>
 
@@ -496,13 +483,10 @@
                                                     <td>
                                                         <a th:href="@{/scouting/analisis/{id}(id=${jugador.id})}" class="fw-bold text-info text-decoration-none hover-underline" th:text="${jugador.nombre}">Jugador</a>
                                                     </td>
-                                                    <!-- Simulación de edad realista -->
                                                     <td th:text="${21 + (jugador.id % 7)} + ' años'">23</td>
-                                                    <!-- Simulación de estadísticas alineadas -->
                                                     <td class="text-center text-light" th:text="${800 + (jugador.id % 5) * 210} + ' min'">1400</td>
                                                     <td class="text-center text-light" th:text="${(jugador.id % 3) + (jugador.posicion.name() == 'DELANTERO' ? 12 : (jugador.posicion.name() == 'EXTREMO' ? 8 : 1))}">5</td>
                                                     <td class="text-center text-light" th:text="${200 + (jugador.id % 4) * 85 + (jugador.posicion.name() == 'PIVOTE' ? 300 : 100)}">450</td>
-                                                    <!-- Simulación de rating -->
                                                     <td class="text-center">
                                                         <span class="text-warning fw-semibold">
                                                             <i class="bi bi-star-fill me-1"></i>
@@ -542,13 +526,11 @@
                                                     </td>
                                                     <td class="fw-semibold text-danger" th:text="${#numbers.formatDecimal(jugador.valorMercado, 1, 'POINT', 0, 'COMMA')} + ' €'">0 €</td>
                                                     <td th:text="${jugador.club != null ? #numbers.formatDecimal(jugador.club.presupuesto, 1, 'POINT', 0, 'COMMA') + ' €' : 'Sin Presupuesto'}">150M</td>
-                                                    <!-- Simulación ROI -->
                                                     <td class="text-center">
                                                         <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded">
                                                             +<span th:text="${15 + (jugador.id % 8) * 4}">20</span>% ROI
                                                         </span>
                                                     </td>
-                                                    <!-- Simulación Proyección a 5 años -->
                                                     <td class="text-end fw-bold text-success" th:text="${#numbers.formatDecimal(jugador.valorMercado * (1.15 + (jugador.id % 5) * 0.1), 1, 'POINT', 0, 'COMMA')} + ' €'">0 €</td>
                                                 </tr>
                                             </tbody>
@@ -632,9 +614,10 @@
                     clubSelect.setAttribute('disabled', 'true');
                     const option = document.createElement('option');
                     option.value = '';
-                    option.text = 'Seleccione primero una liga...';
+                    option.text = 'Seleccione una opción...';
                     clubSelect.appendChild(option);
                 }
+
             });
         });
     </script>
