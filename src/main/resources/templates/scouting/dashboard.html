@@ -46,6 +46,9 @@
             background-color: #0f766e;
             color: #ccfbf1;
         }
+        .hover-underline:hover {
+            text-decoration: underline !important;
+        }
     </style>
 </head>
 <body>
@@ -124,7 +127,7 @@
                                 <tr th:each="jugador, stat : ${jugadoresRecomendados}">
                                     <td class="text-muted fw-bold" th:text="${stat.count}">1</td>
                                     <td>
-                                        <div class="fw-semibold text-light" th:text="${jugador.nombre}">Jugador</div>
+                                        <a th:href="@{/scouting/analisis/{id}(id=${jugador.id})}" class="fw-semibold text-info text-decoration-none hover-underline" th:text="${jugador.nombre}">Jugador</a>
                                     </td>
                                     <td th:text="${jugador.club != null ? jugador.club.nombre : 'Agente Libre'}">Club</td>
                                     <td th:text="${jugador.nacionalidad}">Nacionalidad</td>

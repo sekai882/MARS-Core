@@ -55,4 +55,9 @@ public class MARSServiceImpl implements IMARSService {
                 .limit(5)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Jugador getPlayerDetail(Long id) {
+        return jugadorRepository.findById(id).orElse(null);
+    }
 }
