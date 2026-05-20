@@ -10,6 +10,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -84,20 +86,31 @@
             </div>
         </div>
 
+        <!-- 3-Column Layout -->
         <div class="row">
-            <!-- Left Panel (IEM) -->
-            <div class="col-lg-5 mb-4">
+            <!-- Left Column (IEM) -->
+            <div class="col-lg-4 mb-4">
                 <div class="card shadow-sm p-4 text-center h-100 d-flex flex-column justify-content-center py-5">
                     <span class="text-uppercase tracking-wider text-muted fw-semibold">Índice de Eficiencia de Mercado</span>
                     <div class="display-1 text-iem my-4" th:text="${#numbers.formatDecimal(iem, 1, 'POINT', 2, 'COMMA')}">12.50</div>
-                    <p class="text-muted fs-6 mb-0 mx-auto" style="max-width: 320px;">
-                        El coeficiente IEM evalúa el retorno deportivo en base a sus estadísticas ponderadas por minuto en relación a su costo financiero total. Un índice mayor indica una mayor rentabilidad "Moneyball".
+                    <p class="text-muted fs-6 mb-0 mx-auto" style="max-width: 300px;">
+                        El coeficiente IEM evalúa el retorno deportivo en base a sus estadísticas ponderadas por minuto en relación a su costo financiero total. Un índice mayor indica una mayor rentabilidad Moneyball.
                     </p>
                 </div>
             </div>
 
-            <!-- Right Panel (Projections) -->
-            <div class="col-lg-7 mb-4">
+            <!-- Middle Column (Radar Chart) -->
+            <div class="col-lg-4 mb-4">
+                <div class="card shadow-sm p-4 h-100 d-flex flex-column justify-content-between">
+                    <h4 class="mb-3 text-info fw-bold text-center">Perfil de Rendimiento</h4>
+                    <div style="position: relative; height: 260px; width: 100%;">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column (Projections) -->
+            <div class="col-lg-4 mb-4">
                 <div class="card shadow-sm p-4 h-100">
                     <h4 class="mb-4 text-info fw-bold">Proyección de Valor Estimado</h4>
                     
@@ -105,31 +118,31 @@
                         <table class="table table-hover align-middle">
                             <thead>
                                 <tr>
-                                    <th>Proyección (Plazo)</th>
-                                    <th class="text-end">Valor Proyectado (€)</th>
+                                    <th>Proyección</th>
+                                    <th class="text-end">Valor (€)</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td>
-                                        <div class="fw-semibold text-light">A corto plazo (2 años)</div>
-                                        <small class="text-muted">Crecimiento estimado</small>
+                                        <div class="fw-semibold text-light">2 años</div>
+                                        <small class="text-muted">Corto plazo</small>
                                     </td>
-                                    <td class="text-end fw-bold text-success fs-5" th:text="${#numbers.formatDecimal(proyeccion2, 1, 'POINT', 0, 'COMMA')} + ' €'">0 €</td>
+                                    <td class="text-end fw-bold text-success fs-6" th:text="${#numbers.formatDecimal(proyeccion2, 1, 'POINT', 0, 'COMMA')} + ' €'">0 €</td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <div class="fw-semibold text-light">A mediano plazo (5 años)</div>
-                                        <small class="text-muted">Proyección de maduración</small>
+                                        <div class="fw-semibold text-light">5 años</div>
+                                        <small class="text-muted">Medio plazo</small>
                                     </td>
-                                    <td class="text-end fw-bold text-success fs-5" th:text="${#numbers.formatDecimal(proyeccion5, 1, 'POINT', 0, 'COMMA')} + ' €'">0 €</td>
+                                    <td class="text-end fw-bold text-success fs-6" th:text="${#numbers.formatDecimal(proyeccion5, 1, 'POINT', 0, 'COMMA')} + ' €'">0 €</td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <div class="fw-semibold text-light">A largo plazo (10 años)</div>
-                                        <small class="text-muted">Potencial máximo acumulado</small>
+                                        <div class="fw-semibold text-light">10 años</div>
+                                        <small class="text-muted">Largo plazo</small>
                                     </td>
-                                    <td class="text-end fw-bold text-success fs-5" th:text="${#numbers.formatDecimal(proyeccion10, 1, 'POINT', 0, 'COMMA')} + ' €'">0 €</td>
+                                    <td class="text-end fw-bold text-success fs-6" th:text="${#numbers.formatDecimal(proyeccion10, 1, 'POINT', 0, 'COMMA')} + ' €'">0 €</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -138,6 +151,82 @@
             </div>
         </div>
     </div>
+
+    <!-- Script Block for Chart.js initialization -->
+    <script th:inline="javascript">
+        // Extraemos las variables dinámicas de Thymeleaf de forma segura
+        const goles = [[${stats != null ? stats.goles : 0}]];
+        const pases = [[${stats != null ? stats.pasesExitosos : 0}]];
+        const minutos = [[${stats != null ? stats.minutos : 0}]];
+        const rating = [[${stats != null ? stats.rating : 0.0}]];
+        const iem = [[${iem}]];
+
+        // Normalización de métricas a escala 0 - 100 para la gráfica de Radar
+        const fisico = Math.min(100, Math.round((minutos / 3400.0) * 100.0));
+        const tactico = Math.min(100, Math.round((pases / 2200.0) * 100.0));
+        const tecnico = Math.min(100, Math.round(rating * 10.0));
+        const mentalidad = Math.min(100, Math.round((goles * 3.5) + 60.0));
+        const potencial = Math.min(100, Math.round(75.0 + (iem * 0.8)));
+        const roi = Math.min(100, Math.round(iem * 6.5));
+
+        // Inicialización de la gráfica de Radar de Chart.js
+        const ctx = document.getElementById('radarChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['Físico', 'Táctico', 'Técnico', 'Mentalidad', 'Potencial', 'ROI'],
+                datasets: [{
+                    label: 'Perfil del Jugador',
+                    data: [fisico, tactico, tecnico, mentalidad, potencial, roi],
+                    backgroundColor: 'rgba(56, 189, 248, 0.2)', // Cyan semitransparente
+                    borderColor: 'rgba(56, 189, 248, 1)',      // Cyan brillante
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(56, 189, 248, 1)',
+                    pointBorderColor: '#0f172a',
+                    pointHoverBackgroundColor: '#0f172a',
+                    pointHoverBorderColor: 'rgba(56, 189, 248, 1)',
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    r: {
+                        angleLines: {
+                            color: 'rgba(255, 255, 255, 0.12)'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.12)'
+                        },
+                        pointLabels: {
+                            color: '#94a3b8',
+                            font: {
+                                family: 'Inter',
+                                size: 11,
+                                weight: '600'
+                            }
+                        },
+                        ticks: {
+                            backdropColor: 'transparent',
+                            color: '#475569',
+                            font: {
+                                size: 9
+                            },
+                            stepSize: 20
+                        },
+                        min: 0,
+                        max: 100
+                    }
+                }
+            }
+        });
+    </script>
 
     <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>

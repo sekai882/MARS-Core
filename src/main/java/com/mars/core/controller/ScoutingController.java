@@ -3,6 +3,7 @@ package com.mars.core.controller;
 import com.mars.core.dto.ScoutingFormDTO;
 import com.mars.core.model.Jugador;
 import com.mars.core.model.Position;
+import com.mars.core.model.Estadistica;
 import com.mars.core.services.IMARSService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -58,11 +59,14 @@ public class ScoutingController {
         Double proyeccion5 = valor * (1 + (iem * 0.05) * 5);
         Double proyeccion10 = valor * (1 + (iem * 0.05) * 10);
         
+        Estadistica stats = marsService.getPlayerStats(id);
+        
         model.addAttribute("jugador", jugador);
         model.addAttribute("iem", iem);
         model.addAttribute("proyeccion2", proyeccion2);
         model.addAttribute("proyeccion5", proyeccion5);
         model.addAttribute("proyeccion10", proyeccion10);
+        model.addAttribute("stats", stats);
         
         return "scouting/analisis";
     }

@@ -60,4 +60,10 @@ public class MARSServiceImpl implements IMARSService {
     public Jugador getPlayerDetail(Long id) {
         return jugadorRepository.findById(id).orElse(null);
     }
+
+    @Override
+    public Estadistica getPlayerStats(Long jugadorId) {
+        List<Estadistica> statsList = estadisticaRepository.findByJugadorId(jugadorId);
+        return (statsList != null && !statsList.isEmpty()) ? statsList.get(0) : null;
+    }
 }
