@@ -1,6 +1,6 @@
 package com.mars.core.controller;
 
-import com.mars.core.dto.ScoutingFormDTO;
+import com.mars.core.dto.FiltroComplejoDTO;
 import com.mars.core.model.Jugador;
 import com.mars.core.model.Position;
 import com.mars.core.model.Estadistica;
@@ -29,18 +29,19 @@ public class ScoutingController {
 
     @GetMapping
     public String dashboard(Model model) {
-        model.addAttribute("scoutingForm", new ScoutingFormDTO());
+        model.addAttribute("scoutingForm", new FiltroComplejoDTO());
         model.addAttribute("positions", Position.values());
         return "scouting/dashboard";
     }
 
     @PostMapping("/search")
-    public String search(@ModelAttribute("scoutingForm") @Valid ScoutingFormDTO form, BindingResult result, Model model) {
+    public String search(@ModelAttribute("scoutingForm") @Valid FiltroComplejoDTO form, BindingResult result, Model model) {
         model.addAttribute("positions", Position.values());
         if (result.hasErrors()) {
             return "scouting/dashboard";
         }
-        List<Jugador> jugadores = marsService.executeScouting(form.getBudget(), form.getPosition());
+        // Llamada al nuevo motor de analítica avanzado que recibe FiltroComplejoDTO
+        List<Jugador> jugadores = marsService.executeScouting(form);
         model.addAttribute("jugadoresRecomendados", jugadores);
         return "scouting/dashboard";
     }
