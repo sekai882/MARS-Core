@@ -190,4 +190,66 @@ public class MARSServiceImpl implements IMARSService {
     public EstadisticaDetallada getDetailedStats(Long jugadorId) {
         return detailedStatsRepository.findByJugadorId(jugadorId).orElse(null);
     }
+
+    @Override
+    public Double calculateProjection(Long jugadorId, int años) {
+        Jugador jugador = jugadorRepository.findById(jugadorId).orElse(null);
+        if (jugador == null) {
+            return 0.0;
+        }
+        Double valorMercado = jugador.getValorMercado() != null ? jugador.getValorMercado() : 0.0;
+        double factorEdad = getAgeFactor(jugadorId);
+        Double iem = calculateIEM(jugadorId);
+        return (valorMercado * factorEdad) * (1.0 + (iem * 0.03) * años);
+    }
+
+    @Override
+    public Double getAgeFactor(Long jugadorId) {
+        int edad = 21 + (int) (jugadorId % 7);
+        if (edad < 23) {
+            return 1.2;
+        } else if (edad > 30) {
+            return 0.85;
+        }
+        return 1.0;
+    }
+
+    @Override
+    public List<Jugador> suggestBestXI(Long clubId) {
+        List<Jugador> jugadores = jugadorRepository.findAll().stream()
+                .filter(j -> j.getClub() != null && j.getClub().getId().equals(clubId))
+                .collect(Collectors.toList());
+
+        // Mapa para almacenar los scores ajustados con el bonus de química
+        Map<Long, Double> scores = new HashMap<>();
+        for (Jugador j : jugadores) {
+            scores.put(j.getId(), calculateIEM(j.getId()));
+        }
+
+        // Bucle anidado para comparar nacionalidades y aplicar el bonus de química del 5%
+        for (int i = 0; i < jugadores.size(); i++) {
+            Jugador j1 = jugadores.get(i);
+            for (int k = i + 1; k < jugadores.size(); k++) {
+                Jugador j2 = jugadores.get(k);
+
+                boolean mismaNac = j1.getNacionalidad() != null && 
+                                   j1.getNacionalidad().equalsIgnoreCase(j2.getNacionalidad());
+                
+                boolean esDefensaYPivote = (j1.getPosicion() == Position.DEFENSA && j2.getPosicion() == Position.PIVOTE)
+                        || (j1.getPosicion() == Position.PIVOTE && j2.getPosicion() == Position.DEFENSA);
+
+                if (mismaNac && esDefensaYPivote) {
+                    // Sinergia: Incrementar su score conjunto en 5%
+                    scores.put(j1.getId(), scores.get(j1.getId()) * 1.05);
+                    scores.put(j2.getId(), scores.get(j2.getId()) * 1.05);
+                }
+            }
+        }
+
+        // Ordenar por score ajustado descendentemente
+        jugadores.sort((j1, j2) -> Double.compare(scores.get(j2.getId()), scores.get(j1.getId())));
+
+        // Retornar los mejores jugadores
+        return jugadores.stream().limit(11).collect(Collectors.toList());
+    }
 }

@@ -54,11 +54,10 @@ public class ScoutingController {
         }
         
         Double iem = marsService.calculateIEM(id);
-        Double valor = jugador.getValorMercado() != null ? jugador.getValorMercado() : 0.0;
-        
-        Double proyeccion2 = valor * (1 + (iem * 0.05) * 2);
-        Double proyeccion5 = valor * (1 + (iem * 0.05) * 5);
-        Double proyeccion10 = valor * (1 + (iem * 0.05) * 10);
+        Double proyeccion2 = marsService.calculateProjection(id, 2);
+        Double proyeccion5 = marsService.calculateProjection(id, 5);
+        Double proyeccion10 = marsService.calculateProjection(id, 10);
+        Double factorEdad = marsService.getAgeFactor(id);
         
         Estadistica stats = marsService.getPlayerStats(id);
         
@@ -67,6 +66,7 @@ public class ScoutingController {
         model.addAttribute("proyeccion2", proyeccion2);
         model.addAttribute("proyeccion5", proyeccion5);
         model.addAttribute("proyeccion10", proyeccion10);
+        model.addAttribute("factorEdad", factorEdad);
         model.addAttribute("stats", stats);
         
         return "scouting/analisis";
