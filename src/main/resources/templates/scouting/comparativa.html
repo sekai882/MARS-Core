@@ -16,16 +16,16 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0b0f19;
-            color: #f8fafc;
+            background-color: #121212;
+            color: #e0e0e0;
             overflow-x: hidden;
         }
 
         /* Layout Structure */
         .sidebar {
             width: 280px;
-            background-color: #0f172a;
-            border-right: 1px solid #1e293b;
+            background-color: #1a1a1a;
+            border-right: 1px solid #2d2d2d;
             min-height: 100vh;
             position: fixed;
             top: 0;
@@ -44,8 +44,8 @@
         }
 
         .top-navbar {
-            background-color: #0f172a;
-            border-bottom: 1px solid #1e293b;
+            background-color: #1a1a1a;
+            border-bottom: 1px solid #2d2d2d;
             padding: 0.85rem 2rem;
             display: flex;
             justify-content: space-between;
@@ -70,7 +70,7 @@
             margin: 0;
             display: flex;
             flex-direction: column;
-            gap: 0.35rem;
+            gap: 0.25rem;
         }
 
         .sidebar-link {
@@ -78,79 +78,81 @@
             align-items: center;
             gap: 0.85rem;
             padding: 0.75rem 1rem;
-            color: #94a3b8;
+            color: #888888;
             text-decoration: none;
-            border-radius: 10px;
+            border-radius: 4px;
             font-weight: 500;
             font-size: 0.9rem;
-            transition: all 0.2s ease;
         }
 
         .sidebar-link:hover {
-            color: #f8fafc;
-            background-color: rgba(51, 65, 85, 0.3);
+            color: #ffffff;
+            background-color: #222222;
         }
 
         .sidebar-link.active {
-            color: #38bdf8;
-            background-color: rgba(56, 189, 248, 0.08);
-            border-left: 3px solid #38bdf8;
-            border-radius: 0 10px 10px 0;
+            color: #ffffff;
+            background-color: #2a2a2a;
+            border-left: 3px solid #0d6efd;
+            border-radius: 0 4px 4px 0;
             padding-left: calc(1rem - 3px);
         }
 
         /* Cards & Utilities */
         .card {
-            background-color: #0f172a;
-            border: 1px solid #1e293b;
-            border-radius: 16px;
+            background-color: #1e1e1e;
+            border: 1px solid #2d2d2d;
+            border-radius: 4px;
+            box-shadow: none !important;
         }
 
         .btn-outline-secondary {
-            border-color: #1e293b;
-            background-color: #0f172a;
-            color: #94a3b8;
+            border-color: #2d2d2d;
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+            border-radius: 4px;
         }
 
         .btn-outline-secondary:hover {
-            background-color: rgba(51, 65, 85, 0.2);
-            color: #f8fafc;
+            background-color: #2a2a2a;
+            color: #ffffff;
+            border-color: #3d3d3d;
         }
 
         .table {
             --bs-table-bg: transparent;
-            --bs-table-hover-bg: rgba(51, 65, 85, 0.2);
-            color: #f8fafc;
+            --bs-table-hover-bg: #2a2a2a;
+            color: #e0e0e0;
         }
 
         .table th {
-            color: #64748b;
+            color: #888888;
             font-weight: 600;
             font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            border-bottom: 1px solid #1e293b;
+            border-bottom: 1px solid #2d2d2d;
         }
 
         .table td {
-            border-bottom: 1px solid #1e293b;
+            border-bottom: 1px solid #2d2d2d;
             padding: 1.25rem 0.75rem;
             font-size: 0.95rem;
         }
 
         .player-header-card {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border: 1px solid #334155;
-            border-radius: 16px;
+            background-color: #1e1e1e;
+            border: 1px solid #2d2d2d;
+            border-radius: 4px;
             padding: 2rem;
             text-align: center;
         }
 
         .badge-winner {
-            background-color: rgba(34, 197, 94, 0.15);
-            color: #4ade80;
-            border: 1px solid rgba(34, 197, 94, 0.25);
+            background-color: #22c55e;
+            color: #ffffff;
             font-weight: 600;
+            border-radius: 2px;
         }
     </style>
 </head>
@@ -224,7 +226,7 @@
 
             <!-- Profile Info -->
             <div class="d-flex align-items-center gap-3">
-                <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" type="button" style="border-color: #1e293b; background-color: #0f172a;">
+                <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" type="button" style="border-color: #2d2d2d; background-color: #1e1e1e;">
                     <div class="rounded-circle bg-info d-flex align-items-center justify-content-center text-dark fw-bold" style="width: 32px; height: 32px; font-size: 0.8rem;">
                         DM
                     </div>
@@ -257,7 +259,7 @@
                 <!-- Player 1 Profile Card -->
                 <div class="col-md-6">
                     <div class="player-header-card">
-                        <span class="badge bg-info-subtle text-info border border-info-subtle px-3 py-1.5 rounded-pill mb-3" th:text="${reporte.jugador1.posicion}">PIVOTE</span>
+                        <span class="badge bg-secondary text-white border border-secondary px-3 py-1.5 rounded-1 mb-3" th:text="${reporte.jugador1.posicion}">PIVOTE</span>
                         <h3 class="fw-bold text-white mb-1" th:text="${reporte.jugador1.nombre}">Nombre Jugador 1</h3>
                         <p class="text-secondary mb-0" th:text="${reporte.jugador1.club != null ? reporte.jugador1.club.nombre : 'Agente Libre'}">Club 1</p>
                         <small class="text-muted" th:text="${reporte.jugador1.nacionalidad}">Nacionalidad 1</small>
@@ -268,7 +270,7 @@
                 <!-- Player 2 Profile Card -->
                 <div class="col-md-6">
                     <div class="player-header-card">
-                        <span class="badge bg-info-subtle text-info border border-info-subtle px-3 py-1.5 rounded-pill mb-3" th:text="${reporte.jugador2.posicion}">DEFENSA</span>
+                        <span class="badge bg-secondary text-white border border-secondary px-3 py-1.5 rounded-1 mb-3" th:text="${reporte.jugador2.posicion}">DEFENSA</span>
                         <h3 class="fw-bold text-white mb-1" th:text="${reporte.jugador2.nombre}">Nombre Jugador 2</h3>
                         <p class="text-secondary mb-0" th:text="${reporte.jugador2.club != null ? reporte.jugador2.club.nombre : 'Agente Libre'}">Club 2</p>
                         <small class="text-muted" th:text="${reporte.jugador2.nacionalidad}">Nacionalidad 2</small>
@@ -278,7 +280,7 @@
             </div>
 
             <!-- Comparison Table Card -->
-            <div class="card p-4 shadow-sm">
+            <div class="card p-4">
                 <h4 class="mb-4 text-info fw-bold"><i class="bi bi-bezier2 me-2"></i>Diferencias Métricas Granulares</h4>
                 
                 <div class="table-responsive">
@@ -357,7 +359,7 @@
             </div>
 
             <!-- Differences Summary Card -->
-            <div class="card p-4 mt-4 shadow-sm bg-dark bg-gradient">
+            <div class="card p-4 mt-4">
                 <h4 class="mb-4 text-success fw-bold"><i class="bi bi-trophy me-2"></i>Reporte Comparativo - Conclusiones Analíticas</h4>
                 <div class="row g-3">
                     <div class="col-md-6 col-lg-4">

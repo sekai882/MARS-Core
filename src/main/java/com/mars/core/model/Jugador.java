@@ -8,6 +8,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Transient;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.FetchType;
 
 @Entity
 public class Jugador {
@@ -86,5 +89,27 @@ public class Jugador {
 
     public void setClub(Club club) {
         this.club = club;
+    }
+
+    @Transient
+    private Double dominanceScore;
+
+    public Double getDominanceScore() {
+        return dominanceScore;
+    }
+
+    public void setDominanceScore(Double dominanceScore) {
+        this.dominanceScore = dominanceScore;
+    }
+
+    @OneToOne(mappedBy = "jugador", fetch = FetchType.LAZY)
+    private EstadisticaDetallada estadisticaDetallada;
+
+    public EstadisticaDetallada getEstadisticaDetallada() {
+        return estadisticaDetallada;
+    }
+
+    public void setEstadisticaDetallada(EstadisticaDetallada estadisticaDetallada) {
+        this.estadisticaDetallada = estadisticaDetallada;
     }
 }

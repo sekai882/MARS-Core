@@ -104,12 +104,12 @@ public class MARSServiceImpl implements IMARSService {
     @Override
     public List<Jugador> executeScouting(FiltroComplejoDTO filtro) {
         String clubName = (filtro.getClub() != null && !filtro.getClub().isEmpty()) ? filtro.getClub() : "Todos los Clubes";
-        System.out.println("DEBUG: Iniciando ciclo iterativo de analítica avanzada para el club: " + clubName);
+        System.out.println("DEBUG: Iniciando matriz de dominancia competitiva para el club: " + clubName);
 
         List<Jugador> todos = jugadorRepository.findAll();
-        List<Jugador> filtrados = new java.util.ArrayList<>();
+        List<Jugador> candidatos = new java.util.ArrayList<>();
 
-        // Bucle explícito para recorrer la lista de jugadores y aplicar filtros base
+        // 1. Filtra primero los jugadores por posición y presupuesto máximo en un bucle inicial
         for (Jugador jugador : todos) {
             if (jugador.getPosicion() != filtro.getPosition()) {
                 continue;
@@ -117,8 +117,8 @@ public class MARSServiceImpl implements IMARSService {
             if (jugador.getValorMercado() != null && jugador.getValorMercado() > filtro.getBudget()) {
                 continue;
             }
-
-            // Filtro dinámico opcional por nacionalidad
+            
+            // Opcional: Filtro dinámico opcional por nacionalidad
             if (filtro.getNacionalidad() != null && !filtro.getNacionalidad().equals("todas") && !filtro.getNacionalidad().isEmpty()) {
                 String nac = jugador.getNacionalidad().toLowerCase();
                 if (filtro.getNacionalidad().equals("es") && !nac.contains("esp")) continue;
@@ -126,14 +126,62 @@ public class MARSServiceImpl implements IMARSService {
                 if (filtro.getNacionalidad().equals("fr") && !nac.contains("fra")) continue;
                 if (filtro.getNacionalidad().equals("ar") && !nac.contains("arg")) continue;
             }
-
-            filtrados.add(jugador);
+            
+            candidatos.add(jugador);
         }
 
-        // Ordenamos los jugadores según su score posicional avanzado
-        filtrados.sort((j1, j2) -> Double.compare(calculatePositionalScore(j2), calculatePositionalScore(j1)));
+        // Obtener todos los pares competitivos (todos los jugadores en el sistema con la misma posición)
+        List<Jugador> pares = new java.util.ArrayList<>();
+        for (Jugador jugador : todos) {
+            if (jugador.getPosicion() == filtro.getPosition()) {
+                pares.add(jugador);
+            }
+        }
 
-        return filtrados.stream().limit(5).collect(Collectors.toList());
+        int totalPares = pares.size();
+        int kpisEvaluados = 4; // velocidad, expectedGoals, duelosDefensivos, pasesUltimoTercio
+
+        // 2. Estructura interna para almacenar DominanceScore por candidato
+        Map<Long, Double> dominanceScores = new HashMap<>();
+
+        // 3. Bucle Externo (for) que recorra la lista de candidatos prefiltrados
+        for (Jugador cand : candidatos) {
+            EstadisticaDetallada statsCand = detailedStatsRepository.findByJugadorId(cand.getId()).orElse(null);
+            double velCand = (statsCand != null && statsCand.getVelocidadPunta() != null) ? statsCand.getVelocidadPunta() : 0.0;
+            double xGCand = (statsCand != null && statsCand.getExpectedGoals() != null) ? statsCand.getExpectedGoals() : 0.0;
+            int duelosCand = (statsCand != null && statsCand.getDuelosDefensivos() != null) ? statsCand.getDuelosDefensivos() : 0;
+            int pasesCand = (statsCand != null && statsCand.getPasesUltimoTercio() != null) ? statsCand.getPasesUltimoTercio() : 0;
+
+            int victoryCount = 0;
+
+            // 4. Bucle Interno (for) que recorra la lista completa de todos los jugadores del sistema que jueguen en esa misma posición
+            for (Jugador par : pares) {
+                EstadisticaDetallada statsPar = detailedStatsRepository.findByJugadorId(par.getId()).orElse(null);
+                double velPar = (statsPar != null && statsPar.getVelocidadPunta() != null) ? statsPar.getVelocidadPunta() : 0.0;
+                double xGPar = (statsPar != null && statsPar.getExpectedGoals() != null) ? statsPar.getExpectedGoals() : 0.0;
+                int duelosPar = (statsPar != null && statsPar.getDuelosDefensivos() != null) ? statsPar.getDuelosDefensivos() : 0;
+                int pasesPar = (statsPar != null && statsPar.getPasesUltimoTercio() != null) ? statsPar.getPasesUltimoTercio() : 0;
+
+                // 5. Comparaciones condicionales métrica por métrica
+                if (velCand > velPar) victoryCount++;
+                if (xGCand > xGPar) victoryCount++;
+                if (duelosCand > duelosPar) victoryCount++;
+                if (pasesCand > pasesPar) victoryCount++;
+            }
+
+            // 6. Calcula el porcentaje final de dominancia de mercado
+            double score = 0.0;
+            if (totalPares > 0) {
+                score = (double) victoryCount / (totalPares * kpisEvaluados);
+            }
+            dominanceScores.put(cand.getId(), score);
+            cand.setDominanceScore(score);
+        }
+
+        // 7. Ordena la lista final de forma descendente y retorna los 5 mejores
+        candidatos.sort((j1, j2) -> Double.compare(dominanceScores.getOrDefault(j2.getId(), 0.0), dominanceScores.getOrDefault(j1.getId(), 0.0)));
+
+        return candidatos.stream().limit(5).collect(Collectors.toList());
     }
 
     private Double calculatePositionalScore(Jugador jugador) {
