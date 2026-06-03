@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -208,8 +208,8 @@
 
         <!-- Sidebar Footer Info -->
         <div class="mt-auto pt-3 border-top border-secondary opacity-50" style="font-size: 0.75rem;">
-            <div>Usuario: josuemullo10</div>
-            <div>Sesión activa: SSL-Encrypted</div>
+            <div>Usuario: <span sec:authentication="name">Usuario</span></div>
+            <div>Rol: <span sec:authentication="principal.authorities[0].authority">Rol</span></div>
         </div>
     </div>
 
@@ -226,15 +226,26 @@
 
             <!-- Profile Info -->
             <div class="d-flex align-items-center gap-3">
-                <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" type="button" style="border-color: #2d2d2d; background-color: #1e1e1e;">
-                    <div class="rounded-circle bg-info d-flex align-items-center justify-content-center text-dark fw-bold" style="width: 32px; height: 32px; font-size: 0.8rem;">
-                        DM
-                    </div>
-                    <div class="text-start d-none d-sm-block">
-                        <div class="fw-semibold text-light" style="font-size: 0.8rem; line-height: 1.1;">Josue Mullo</div>
-                        <small class="text-muted" style="font-size: 0.65rem;">Director Deportivo</small>
-                    </div>
-                </button>
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-color: #2d2d2d; background-color: #1e1e1e;">
+                        <div class="rounded-circle bg-info d-flex align-items-center justify-content-center text-dark fw-bold" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                            DM
+                        </div>
+                        <div class="text-start d-none d-sm-block">
+                            <div class="fw-semibold text-light" style="font-size: 0.8rem; line-height: 1.1;"><span sec:authentication="name">Usuario</span></div>
+                            <small class="text-muted" style="font-size: 0.65rem;"><span sec:authentication="principal.authorities[0].authority">Rol</span></small>
+                        </div>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <form th:action="@{/logout}" method="post" class="m-0 p-0">
+                                <button type="submit" class="dropdown-item text-danger border-0 bg-transparent" style="cursor:pointer;">
+                                    <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
 

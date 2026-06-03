@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -215,8 +215,8 @@
 
         <!-- Sidebar Footer Info -->
         <div class="mt-auto pt-3 border-top border-secondary opacity-50" style="font-size: 0.75rem;">
-            <div>Usuario: josuemullo10</div>
-            <div>Sesión activa: SSL-Encrypted</div>
+            <div>Usuario: <span sec:authentication="name">Usuario</span></div>
+            <div>Rol: <span sec:authentication="principal.authorities[0].authority">Rol</span></div>
         </div>
     </div>
 
@@ -251,15 +251,21 @@
                             DM
                         </div>
                         <div class="text-start d-none d-sm-block">
-                            <div class="fw-semibold text-light" style="font-size: 0.8rem; line-height: 1.1;">Josue Mullo</div>
-                            <small class="text-muted" style="font-size: 0.65rem;">Director Deportivo</small>
+                            <div class="fw-semibold text-light" style="font-size: 0.8rem; line-height: 1.1;"><span sec:authentication="name">Usuario</span></div>
+                            <small class="text-muted" style="font-size: 0.65rem;"><span sec:authentication="principal.authorities[0].authority">Rol</span></small>
                         </div>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Mi Perfil</a></li>
                         <li><a class="dropdown-item" href="#"><i class="bi bi-shield-lock me-2"></i>Seguridad</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
+                        <li>
+                            <form th:action="@{/logout}" method="post" class="m-0 p-0">
+                                <button type="submit" class="dropdown-item text-danger border-0 bg-transparent" style="cursor:pointer;">
+                                    <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+                                </button>
+                            </form>
+                        </li>
                     </ul>
                 </div>
             </div>

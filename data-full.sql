@@ -5,9 +5,15 @@
 -- ====================================================================
 
 -- 1. Limpiar datos existentes en cascada
-TRUNCATE TABLE estadistica_detallada, estadistica, jugador, club RESTART IDENTITY CASCADE;
+TRUNCATE TABLE estadistica_detallada, estadistica, jugador, club, usuario RESTART IDENTITY CASCADE;
 
--- 2. Insertar Clubes (La Liga Santander)
+-- 2. Insertar Usuarios (Semilla de Seguridad)
+-- La contraseña para ambos es "password"
+INSERT INTO usuario (id, nombre, email, password, rol) VALUES 
+(1, 'Administrador MARS', 'admin@mars.com', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HCGzGzEpTxeHk.C/xRz5W', 'Administrador'),
+(2, 'Director Académico', 'director@mars.com', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HCGzGzEpTxeHk.C/xRz5W', 'Director Académico');
+
+-- 3. Insertar Clubes (La Liga Santander)
 INSERT INTO club (id, nombre, presupuesto) VALUES 
 (1, 'Real Madrid CF', 900000000.0),
 (2, 'FC Barcelona', 800000000.0),

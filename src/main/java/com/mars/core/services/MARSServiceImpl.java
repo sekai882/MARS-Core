@@ -130,7 +130,7 @@ public class MARSServiceImpl implements IMARSService {
             candidatos.add(jugador);
         }
 
-        // Obtener todos los pares competitivos (todos los jugadores en el sistema con la misma posición)
+        // Obtener todos los pares competitivos
         List<Jugador> pares = new java.util.ArrayList<>();
         for (Jugador jugador : todos) {
             if (jugador.getPosicion() == filtro.getPosition()) {
