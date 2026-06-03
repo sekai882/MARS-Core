@@ -96,9 +96,13 @@
                 <div class="card p-4 text-center h-100 d-flex flex-column justify-content-center py-5">
                     <span class="text-uppercase tracking-wider text-muted fw-semibold">Índice de Eficiencia de Mercado</span>
                     <div class="display-1 text-iem my-4" th:text="${#numbers.formatDecimal(iem, 1, 'POINT', 2, 'COMMA')}">12.50</div>
-                    <p class="text-muted fs-6 mb-0 mx-auto" style="max-width: 300px;">
+                    <p class="text-muted fs-6 mb-3 mx-auto" style="max-width: 300px;">
                         El coeficiente IEM evalúa el retorno deportivo en base a sus estadísticas ponderadas por minuto en relación a su costo financiero total. Un índice mayor indica una mayor rentabilidad Moneyball.
                     </p>
+                    <hr class="border-secondary my-2">
+                    <span class="text-uppercase tracking-wider text-muted fw-semibold" style="font-size: 0.75rem;">Score Posicional Ponderado</span>
+                    <div class="fs-2 fw-bold text-warning mt-2" th:text="${#numbers.formatDecimal(positionalScore, 1, 'POINT', 2, 'COMMA')}">0.00</div>
+                    <small class="text-muted">Basado en pesos tácticos por posición</small>
                 </div>
             </div>
 

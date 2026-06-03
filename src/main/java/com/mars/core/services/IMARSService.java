@@ -17,4 +17,5 @@ public interface IMARSService {
     Double calculateProjection(Long jugadorId, int años);
     Double getAgeFactor(Long jugadorId);
     List<Jugador> suggestBestXI(Long clubId);
+    Double calculatePositionalScore(Long jugadorId);
 }

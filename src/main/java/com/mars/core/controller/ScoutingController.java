@@ -1,9 +1,11 @@
 package com.mars.core.controller;
 
 import com.mars.core.dto.FiltroComplejoDTO;
+import com.mars.core.model.Club;
 import com.mars.core.model.Jugador;
 import com.mars.core.model.Position;
 import com.mars.core.model.Estadistica;
+import com.mars.core.repository.ClubRepository;
 import com.mars.core.services.IMARSService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -22,9 +25,11 @@ import java.util.List;
 public class ScoutingController {
 
     private final IMARSService marsService;
+    private final ClubRepository clubRepository;
 
-    public ScoutingController(IMARSService marsService) {
+    public ScoutingController(IMARSService marsService, ClubRepository clubRepository) {
         this.marsService = marsService;
+        this.clubRepository = clubRepository;
     }
 
     @GetMapping
@@ -60,6 +65,7 @@ public class ScoutingController {
         Double factorEdad = marsService.getAgeFactor(id);
         
         Estadistica stats = marsService.getPlayerStats(id);
+        Double positionalScore = marsService.calculatePositionalScore(id);
         
         model.addAttribute("jugador", jugador);
         model.addAttribute("iem", iem);
@@ -68,7 +74,29 @@ public class ScoutingController {
         model.addAttribute("proyeccion10", proyeccion10);
         model.addAttribute("factorEdad", factorEdad);
         model.addAttribute("stats", stats);
+        model.addAttribute("positionalScore", positionalScore);
         
         return "scouting/analisis";
+    }
+
+    @GetMapping("/bestxi")
+    public String bestXI(@RequestParam(value = "clubId", required = false) Long clubId, Model model) {
+        List<Club> clubes = clubRepository.findAll();
+        model.addAttribute("clubes", clubes);
+
+        if (clubId != null) {
+            List<Jugador> mejorXI = marsService.suggestBestXI(clubId);
+            model.addAttribute("mejorXI", mejorXI);
+            model.addAttribute("selectedClubId", clubId);
+            
+            // Calcular IEM para cada jugador del XI
+            java.util.Map<Long, Double> iemMap = new java.util.HashMap<>();
+            for (Jugador j : mejorXI) {
+                iemMap.put(j.getId(), marsService.calculateIEM(j.getId()));
+            }
+            model.addAttribute("iemMap", iemMap);
+        }
+
+        return "scouting/bestxi";
     }
 }

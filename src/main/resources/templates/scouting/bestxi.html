@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MARS | Mejor XI</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Bootstrap Icons CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .card {
+            background-color: #1e1e1e;
+            border: 1px solid #2d2d2d;
+            border-radius: 4px;
+        }
+        .table {
+            --bs-table-bg: transparent;
+            --bs-table-hover-bg: #2a2a2a;
+            color: #e0e0e0;
+        }
+        .table th {
+            color: #888888;
+            font-weight: 600;
+        }
+        .badge-position {
+            background-color: #333333;
+            color: #ffffff;
+            border: 1px solid #444444;
+            border-radius: 2px;
+        }
+        .text-iem {
+            color: #0d6efd;
+            font-weight: 800;
+        }
+        .chemistry-badge {
+            background-color: #198754;
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/scouting">
+                <span class="fs-4 fw-bold text-info">MARS</span>
+                <span class="mx-2 text-muted">|</span>
+                <span class="fs-6 text-light opacity-75">Mejor XI</span>
+            </a>
+            <div class="d-flex align-items-center gap-2">
+                <span class="text-muted" style="font-size: 0.8rem;" sec:authentication="name">Usuario</span>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button type="submit" class="btn btn-outline-secondary btn-sm">Cerrar Sesión</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container mt-5">
+        <!-- Back Button -->
+        <div class="mb-4">
+            <a th:href="@{/scouting}" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2 fw-semibold">
+                <i class="bi bi-arrow-left"></i>
+                Volver al Buscador
+            </a>
+        </div>
+
+        <!-- Header -->
+        <div class="card p-4 mb-4">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div>
+                    <span class="text-info fw-semibold text-uppercase fs-6">Análisis de Alineación Óptima</span>
+                    <h1 class="fw-bold text-light mt-1 mb-0">Mejor XI con Química</h1>
+                    <p class="text-muted mt-1 mb-0" style="font-size: 0.85rem;">
+                        Algoritmo de sinergia: +5% bonus cuando un Defensa y un Pivote comparten nacionalidad.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Club Selector -->
+        <div class="card p-4 mb-4">
+            <form th:action="@{/scouting/bestxi}" method="get" class="row g-3 align-items-end">
+                <div class="col-md-8">
+                    <label for="clubId" class="form-label fw-semibold text-muted">Seleccionar Club</label>
+                    <select class="form-select bg-dark text-light border-secondary" id="clubId" name="clubId" required>
+                        <option value="" disabled th:selected="${selectedClubId == null}">Seleccione un club...</option>
+                        <option th:each="club : ${clubes}" th:value="${club.id}" th:text="${club.nombre}"
+                                th:selected="${selectedClubId != null && selectedClubId == club.id}">Club</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-info w-100 fw-semibold">
+                        <i class="bi bi-trophy-fill me-1"></i> Generar Mejor XI
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results Table -->
+        <div th:if="${mejorXI != null}" class="card p-4">
+            <h5 class="fw-bold text-light mb-3">
+                <i class="bi bi-trophy-fill text-warning me-2"></i>Alineación Óptima
+                <span class="badge bg-info ms-2" th:text="${#lists.size(mejorXI)} + ' jugadores'">0 jugadores</span>
+            </h5>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Jugador</th>
+                            <th>Posición</th>
+                            <th>Nacionalidad</th>
+                            <th>Valor de Mercado</th>
+                            <th>IEM (Eficiencia)</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="jugador, iter : ${mejorXI}">
+                            <td>
+                                <span class="fw-bold text-info" th:text="${iter.index + 1}">1</span>
+                            </td>
+                            <td>
+                                <span class="fw-semibold text-light" th:text="${jugador.nombre}">Nombre</span>
+                            </td>
+                            <td>
+                                <span class="badge badge-position px-2 py-1" th:text="${jugador.posicion}">POS</span>
+                            </td>
+                            <td>
+                                <span th:text="${jugador.nacionalidad}">Nacionalidad</span>
+                            </td>
+                            <td>
+                                <span th:text="'$' + ${#numbers.formatDecimal(jugador.valorMercado, 1, 'COMMA', 0, 'POINT')}">$0</span>
+                            </td>
+                            <td>
+                                <span class="text-iem" th:text="${#numbers.formatDecimal(iemMap[jugador.id], 1, 2)}">0.00</span>
+                            </td>
+                            <td>
+                                <a th:href="@{'/scouting/analisis/' + ${jugador.id}}" class="btn btn-sm btn-outline-info">
+                                    <i class="bi bi-eye"></i> Ver
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>

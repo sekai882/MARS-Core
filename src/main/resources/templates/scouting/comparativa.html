@@ -181,24 +181,30 @@
                 </a>
             </li>
             <li>
+                <a th:href="@{/scouting/bestxi}" class="sidebar-link">
+                    <i class="bi bi-trophy-fill"></i>
+                    <span>Mejor XI</span>
+                </a>
+            </li>
+            <li>
                 <a href="#" class="sidebar-link">
                     <i class="bi bi-people-fill"></i>
                     <span>Gestión de Plantilla</span>
                 </a>
             </li>
-            <li>
+            <li sec:authorize="hasRole('ADMIN')">
                 <a href="#" class="sidebar-link">
                     <i class="bi bi-graph-up-arrow"></i>
                     <span>Reportes Financieros</span>
                 </a>
             </li>
-            <li>
+            <li sec:authorize="hasRole('ADMIN')">
                 <a href="#" class="sidebar-link">
                     <i class="bi bi-database-fill-gear"></i>
                     <span>Base de Datos La Liga</span>
                 </a>
             </li>
-            <li>
+            <li sec:authorize="hasRole('ADMIN')">
                 <a href="#" class="sidebar-link">
                     <i class="bi bi-sliders2"></i>
                     <span>Configuración</span>

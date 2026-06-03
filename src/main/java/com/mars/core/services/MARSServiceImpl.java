@@ -184,7 +184,13 @@ public class MARSServiceImpl implements IMARSService {
         return candidatos.stream().limit(5).collect(Collectors.toList());
     }
 
-    private Double calculatePositionalScore(Jugador jugador) {
+    @Override
+    public Double calculatePositionalScore(Long jugadorId) {
+        Jugador jugador = jugadorRepository.findById(jugadorId).orElse(null);
+        if (jugador == null) {
+            return 0.0;
+        }
+
         EstadisticaDetallada detStats = detailedStatsRepository.findByJugadorId(jugador.getId()).orElse(null);
         if (detStats == null) {
             return 0.0;
