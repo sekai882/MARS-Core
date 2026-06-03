@@ -10,8 +10,8 @@ TRUNCATE TABLE estadistica_detallada, estadistica, jugador, club, usuario RESTAR
 -- 2. Insertar Usuarios (Semilla de Seguridad)
 -- La contraseña para ambos es "password"
 INSERT INTO usuario (id, nombre, email, password, rol) VALUES 
-(1, 'Administrador MARS', 'admin@mars.com', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HCGzGzEpTxeHk.C/xRz5W', 'Administrador'),
-(2, 'Director Académico', 'director@mars.com', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HCGzGzEpTxeHk.C/xRz5W', 'Director Académico');
+(1, 'Administrador MARS', 'admin@mars.com', '$2a$10$30q4WCSV/KzuzEFoUulXpe1SNk8sNNOj4xs.HpIGBP5cvn/8bYirG', 'Administrador'),
+(2, 'Director Académico', 'director@mars.com', '$2a$10$30q4WCSV/KzuzEFoUulXpe1SNk8sNNOj4xs.HpIGBP5cvn/8bYirG', 'Director Académico');
 
 -- 3. Insertar Clubes (La Liga Santander)
 INSERT INTO club (id, nombre, presupuesto) VALUES 
