@@ -84,7 +84,10 @@ INSERT INTO jugador (id, nombre, valor_mercado, nacionalidad, edad, posicion, cl
 (29, 'Jan Oblak', 30000000.0, 'Eslovenia', 31, 'PORTERO', 6),
 (30, 'Álvaro Morata', 16000000.0, 'España', 31, 'DELANTERO', 6),
 (31, 'Thibaut Courtois', 35000000.0, 'Bélgica', 34, 'PORTERO', 1),
-(32, 'Marc-André ter Stegen', 28000000.0, 'Alemania', 34, 'PORTERO', 2);
+(32, 'Marc-André ter Stegen', 28000000.0, 'Alemania', 34, 'PORTERO', 2),
+(33, 'Rui Silva', 12000000.0, 'Portugal', 32, 'PORTERO', 7),
+(34, 'Álex Remiro', 25000000.0, 'España', 31, 'PORTERO', 10),
+(35, 'David Soria', 8000000.0, 'España', 33, 'PORTERO', 3);
 
 -- 4. Insertar Estadísticas Generales (estadistica)
 INSERT INTO estadistica (id, goles, pases_exitosos, minutos, rating, jugador_id) VALUES
@@ -130,7 +133,10 @@ INSERT INTO estadistica (id, goles, pases_exitosos, minutos, rating, jugador_id)
 (29, 0, 400, 3400, 8.0, 29),
 (30, 21, 350, 2800, 8.2, 30),
 (31, 0, 550, 3100, 8.5, 31),
-(32, 0, 600, 3000, 8.3, 32);
+(32, 0, 600, 3000, 8.3, 32),
+(33, 0, 280, 3200, 8.0, 33),
+(34, 0, 310, 3300, 8.2, 34),
+(35, 0, 190, 3400, 8.1, 35);
 
 -- 5. Insertar Estadísticas Granulares (estadistica_detallada)
 INSERT INTO estadistica_detallada (id, velocidad_punta, pases_ultimo_tercio, duelos_defensivos, expected_goals, atajadas, jugador_id) VALUES
@@ -176,7 +182,10 @@ INSERT INTO estadistica_detallada (id, velocidad_punta, pases_ultimo_tercio, due
 (29, 0.0, 35, 0, 0.0, 88, 29),
 (30, 33.2, 90, 35, 21.0, 0, 30),
 (31, 0.0, 40, 0, 0.0, 90, 31),
-(32, 0.0, 45, 0, 0.0, 86, 32);
+(32, 0.0, 45, 0, 0.0, 86, 32),
+(33, 0.0, 30, 0, 0.0, 74, 33),
+(34, 0.0, 35, 0, 0.0, 82, 34),
+(35, 0.0, 25, 0, 0.0, 85, 35);
 
 -- 6. Ajustar secuencias de ID de PostgreSQL para prevenir colisiones en ejecuciones futuras
 SELECT setval('club_id_seq', (SELECT MAX(id) FROM club));

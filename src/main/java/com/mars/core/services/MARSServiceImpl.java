@@ -162,7 +162,7 @@ public class MARSServiceImpl implements IMARSService {
         }
 
         int totalPares = pares.size();
-        int kpisEvaluados = 4; // velocidad, expectedGoals, duelosDefensivos, pasesUltimoTercio
+        int kpisEvaluados = (filtro.getPosition() == Position.PORTERO) ? 2 : 4; // PORTERO evalúa 2 métricas, los demás 4
 
         // 2. Estructura interna para almacenar DominanceScore por candidato
         Map<Long, Double> dominanceScores = new HashMap<>();
@@ -186,10 +186,17 @@ public class MARSServiceImpl implements IMARSService {
                 int pasesPar = (statsPar != null && statsPar.getPasesUltimoTercio() != null) ? statsPar.getPasesUltimoTercio() : 0;
 
                 // 5. Comparaciones condicionales métrica por métrica
-                if (velCand > velPar) victoryCount++;
-                if (xGCand > xGPar) victoryCount++;
-                if (duelosCand > duelosPar) victoryCount++;
-                if (pasesCand > pasesPar) victoryCount++;
+                if (filtro.getPosition() == Position.PORTERO) {
+                    int atajadasCand = (statsCand != null && statsCand.getAtajadas() != null) ? statsCand.getAtajadas() : 0;
+                    int atajadasPar = (statsPar != null && statsPar.getAtajadas() != null) ? statsPar.getAtajadas() : 0;
+                    if (atajadasCand > atajadasPar) victoryCount++;
+                    if (pasesCand > pasesPar) victoryCount++;
+                } else {
+                    if (velCand > velPar) victoryCount++;
+                    if (xGCand > xGPar) victoryCount++;
+                    if (duelosCand > duelosPar) victoryCount++;
+                    if (pasesCand > pasesPar) victoryCount++;
+                }
             }
 
             // 6. Calcula el porcentaje final de dominancia de mercado
