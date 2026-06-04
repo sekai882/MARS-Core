@@ -78,7 +78,7 @@ INSERT INTO jugador (id, nombre, valor_mercado, nacionalidad, edad, posicion, cl
 (26, 'Antoine Griezmann', 25000000.0, 'Francia', 33, 'DELANTERO', 6),
 (27, 'Koke Resurrección', 12000000.0, 'España', 32, 'PIVOTE', 6),
 (28, 'Marcos Llorente', 30000000.0, 'España', 29, 'PIVOTE', 6),
-(29, 'Jan Oblak', 30000000.0, 'Eslovenia', 31, 'DEFENSA', 6),
+(29, 'Jan Oblak', 30000000.0, 'Eslovenia', 31, 'PORTERO', 6),
 (30, 'Álvaro Morata', 16000000.0, 'España', 31, 'DELANTERO', 6);
 
 -- 4. Insertar Estadísticas Generales (estadistica)
@@ -126,48 +126,48 @@ INSERT INTO estadistica (id, goles, pases_exitosos, minutos, rating, jugador_id)
 (30, 21, 350, 2800, 8.2, 30);
 
 -- 5. Insertar Estadísticas Granulares (estadistica_detallada)
-INSERT INTO estadistica_detallada (id, velocidad_punta, pases_ultimo_tercio, duelos_defensivos, expected_goals, jugador_id) VALUES
+INSERT INTO estadistica_detallada (id, velocidad_punta, pases_ultimo_tercio, duelos_defensivos, expected_goals, atajadas, jugador_id) VALUES
 -- Real Madrid CF
-(1, 36.5, 120, 25, 16.5, 1),
-(2, 33.2, 180, 80, 17.2, 2),
-(3, 37.9, 105, 15, 25.8, 3),
-(4, 35.1, 45, 180, 1.5, 4),
-(5, 36.2, 160, 95, 6.8, 5),
+(1, 36.5, 120, 25, 16.5, 0, 1),
+(2, 33.2, 180, 80, 17.2, 0, 2),
+(3, 37.9, 105, 15, 25.8, 0, 3),
+(4, 35.1, 45, 180, 1.5, 0, 4),
+(5, 36.2, 160, 95, 6.8, 0, 5),
 
 -- FC Barcelona
-(6, 32.5, 70, 20, 22.4, 6),
-(7, 35.8, 210, 40, 11.5, 7),
-(8, 31.8, 250, 75, 4.8, 8),
-(9, 35.4, 35, 165, 2.1, 9),
-(10, 32.7, 140, 110, 3.5, 10),
+(6, 32.5, 70, 20, 22.4, 0, 6),
+(7, 35.8, 210, 40, 11.5, 0, 7),
+(8, 31.8, 250, 75, 4.8, 0, 8),
+(9, 35.4, 35, 165, 2.1, 0, 9),
+(10, 32.7, 140, 110, 3.5, 0, 10),
 
 -- Getafe CF (Estadísticas extraordinarias de xG, duelos y pases)
-(11, 33.1, 65, 18, 24.2, 11),
-(12, 31.5, 280, 85, 5.5, 12),
-(13, 36.4, 155, 30, 15.2, 13),
-(14, 33.8, 25, 210, 0.8, 14),
-(15, 32.9, 110, 140, 4.2, 15),
+(11, 33.1, 65, 18, 24.2, 0, 11),
+(12, 31.5, 280, 85, 5.5, 0, 12),
+(13, 36.4, 155, 30, 15.2, 0, 13),
+(14, 33.8, 25, 210, 0.8, 0, 14),
+(15, 32.9, 110, 140, 4.2, 0, 15),
 
 -- Rayo Vallecano (Estadísticas extraordinarias de xG, duelos y pases)
-(16, 34.0, 80, 22, 21.9, 16),
-(17, 34.5, 195, 48, 14.8, 17),
-(18, 31.2, 130, 195, 2.8, 18),
-(19, 32.1, 55, 185, 3.5, 19),
-(20, 36.8, 125, 35, 12.1, 20),
+(16, 34.0, 80, 22, 21.9, 0, 16),
+(17, 34.5, 195, 48, 14.8, 0, 17),
+(18, 31.2, 130, 195, 2.8, 0, 18),
+(19, 32.1, 55, 185, 3.5, 0, 19),
+(20, 36.8, 125, 35, 12.1, 0, 20),
 
 -- Villarreal CF
-(21, 33.5, 120, 40, 20.5, 21),
-(22, 30.5, 250, 60, 3.5, 22),
-(23, 34.8, 180, 50, 10.2, 23),
-(24, 35.1, 140, 45, 8.5, 24),
-(25, 34.2, 80, 30, 22.8, 25),
+(21, 33.5, 120, 40, 20.5, 0, 21),
+(22, 30.5, 250, 60, 3.5, 0, 22),
+(23, 34.8, 180, 50, 10.2, 0, 23),
+(24, 35.1, 140, 45, 8.5, 0, 24),
+(25, 34.2, 80, 30, 22.8, 0, 25),
 
 -- Atlético de Madrid
-(26, 33.8, 220, 45, 19.5, 26),
-(27, 31.5, 280, 80, 2.8, 27),
-(28, 35.5, 190, 75, 5.5, 28),
-(29, 28.5, 30, 10, 0.0, 29),
-(30, 33.2, 90, 35, 21.0, 30);
+(26, 33.8, 220, 45, 19.5, 0, 26),
+(27, 31.5, 280, 80, 2.8, 0, 27),
+(28, 35.5, 190, 75, 5.5, 0, 28),
+(29, 0.0, 35, 0, 0.0, 88, 29),
+(30, 33.2, 90, 35, 21.0, 0, 30);
 
 -- 6. Ajustar secuencias de ID de PostgreSQL para prevenir colisiones en ejecuciones futuras
 SELECT setval('club_id_seq', (SELECT MAX(id) FROM club));

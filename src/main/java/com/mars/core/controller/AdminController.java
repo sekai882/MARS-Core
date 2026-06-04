@@ -69,6 +69,7 @@ public class AdminController {
             @RequestParam Double expectedGoals,
             @RequestParam Integer duelosDefensivos,
             @RequestParam Integer pasesUltimoTercio,
+            @RequestParam Integer atajadas,
             Model model) {
 
         // 1. Buscar el club seleccionado
@@ -105,6 +106,7 @@ public class AdminController {
         detStats.setExpectedGoals(expectedGoals);
         detStats.setDuelosDefensivos(duelosDefensivos);
         detStats.setPasesUltimoTercio(pasesUltimoTercio);
+        detStats.setAtajadas(atajadas);
         detStats.setJugador(jugador);
         detailedStatsRepository.save(detStats);
 

@@ -22,6 +22,8 @@ public class EstadisticaDetallada {
 
     private Double expectedGoals;
 
+    private Integer atajadas;
+
     @OneToOne
     @JoinColumn(name = "jugador_id", unique = true)
     private Jugador jugador;
@@ -83,5 +85,13 @@ public class EstadisticaDetallada {
 
     public void setJugador(Jugador jugador) {
         this.jugador = jugador;
+    }
+
+    public Integer getAtajadas() {
+        return atajadas;
+    }
+
+    public void setAtajadas(Integer atajadas) {
+        this.atajadas = atajadas;
     }
 }

@@ -4,5 +4,6 @@ public enum Position {
     PIVOTE,
     EXTREMO,
     DELANTERO,
-    DEFENSA
+    DEFENSA,
+    PORTERO
 }

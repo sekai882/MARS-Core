@@ -57,6 +57,15 @@ public class MARSServiceImpl implements IMARSService {
         pesosDefensa.put("duelos", 0.8);
         pesosDefensa.put("xG", 0.0);
         PESOS_POSICIONALES.put(Position.DEFENSA, pesosDefensa);
+
+        // PORTERO: atajadas (0.8), pases (0.2)
+        Map<String, Double> pesosPortero = new HashMap<>();
+        pesosPortero.put("velocidad", 0.0);
+        pesosPortero.put("pases", 0.2);
+        pesosPortero.put("duelos", 0.0);
+        pesosPortero.put("xG", 0.0);
+        pesosPortero.put("atajadas", 0.8);
+        PESOS_POSICIONALES.put(Position.PORTERO, pesosPortero);
     }
 
     public MARSServiceImpl(JugadorRepository jugadorRepository, 
@@ -221,6 +230,10 @@ public class MARSServiceImpl implements IMARSService {
                 break;
             case DEFENSA:
                 score = (vel * pesos.get("velocidad")) + (duelos * pesos.get("duelos"));
+                break;
+            case PORTERO:
+                double atajadas = detStats.getAtajadas() != null ? detStats.getAtajadas() : 0.0;
+                score = (atajadas * pesos.get("atajadas")) + (pases * pesos.get("pases"));
                 break;
             default:
                 score = 0.0;
