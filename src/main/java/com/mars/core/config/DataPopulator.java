@@ -54,6 +54,11 @@ public class DataPopulator implements CommandLineRunner {
                         duelos += 35;
                         xG = 0.2;
                         break;
+                    case PORTERO:
+                        vel = 0.0;
+                        xG = 0.0;
+                        duelos = 0;
+                        break;
                 }
 
                 EstadisticaDetallada detailed = new EstadisticaDetallada(

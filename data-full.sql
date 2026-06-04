@@ -7,6 +7,9 @@
 -- 1. Limpiar datos existentes en cascada
 TRUNCATE TABLE estadistica_detallada, estadistica, jugador, club, usuario RESTART IDENTITY CASCADE;
 
+ALTER TABLE jugador DROP CONSTRAINT IF EXISTS jugador_posicion_check;
+ALTER TABLE jugador ADD CONSTRAINT jugador_posicion_check CHECK (posicion IN ('PIVOTE', 'EXTREMO', 'DELANTERO', 'DEFENSA', 'PORTERO'));
+
 -- 2. Insertar Usuarios (Semilla de Seguridad)
 -- La contraseña para ambos es "password"
 INSERT INTO usuario (id, nombre, email, password, rol) VALUES 
@@ -79,7 +82,9 @@ INSERT INTO jugador (id, nombre, valor_mercado, nacionalidad, edad, posicion, cl
 (27, 'Koke Resurrección', 12000000.0, 'España', 32, 'PIVOTE', 6),
 (28, 'Marcos Llorente', 30000000.0, 'España', 29, 'PIVOTE', 6),
 (29, 'Jan Oblak', 30000000.0, 'Eslovenia', 31, 'PORTERO', 6),
-(30, 'Álvaro Morata', 16000000.0, 'España', 31, 'DELANTERO', 6);
+(30, 'Álvaro Morata', 16000000.0, 'España', 31, 'DELANTERO', 6),
+(31, 'Thibaut Courtois', 35000000.0, 'Bélgica', 34, 'PORTERO', 1),
+(32, 'Marc-André ter Stegen', 28000000.0, 'Alemania', 34, 'PORTERO', 2);
 
 -- 4. Insertar Estadísticas Generales (estadistica)
 INSERT INTO estadistica (id, goles, pases_exitosos, minutos, rating, jugador_id) VALUES
@@ -123,7 +128,9 @@ INSERT INTO estadistica (id, goles, pases_exitosos, minutos, rating, jugador_id)
 (27, 2, 1300, 3200, 8.2, 27),
 (28, 6, 900, 2900, 8.3, 28),
 (29, 0, 400, 3400, 8.0, 29),
-(30, 21, 350, 2800, 8.2, 30);
+(30, 21, 350, 2800, 8.2, 30),
+(31, 0, 550, 3100, 8.5, 31),
+(32, 0, 600, 3000, 8.3, 32);
 
 -- 5. Insertar Estadísticas Granulares (estadistica_detallada)
 INSERT INTO estadistica_detallada (id, velocidad_punta, pases_ultimo_tercio, duelos_defensivos, expected_goals, atajadas, jugador_id) VALUES
@@ -167,7 +174,9 @@ INSERT INTO estadistica_detallada (id, velocidad_punta, pases_ultimo_tercio, due
 (27, 31.5, 280, 80, 2.8, 0, 27),
 (28, 35.5, 190, 75, 5.5, 0, 28),
 (29, 0.0, 35, 0, 0.0, 88, 29),
-(30, 33.2, 90, 35, 21.0, 0, 30);
+(30, 33.2, 90, 35, 21.0, 0, 30),
+(31, 0.0, 40, 0, 0.0, 90, 31),
+(32, 0.0, 45, 0, 0.0, 86, 32);
 
 -- 6. Ajustar secuencias de ID de PostgreSQL para prevenir colisiones en ejecuciones futuras
 SELECT setval('club_id_seq', (SELECT MAX(id) FROM club));
