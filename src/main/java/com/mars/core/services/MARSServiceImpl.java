@@ -137,15 +137,15 @@ public class MARSServiceImpl implements IMARSService {
             }
 
             // Filtro de edad real
-            if (filtro.getEdad() != null && !filtro.getEdad().isEmpty()) {
+            if (filtro.getEdad() != null && !filtro.getEdad().isEmpty() && !filtro.getEdad().equals("todas")) {
                 String ageFilter = filtro.getEdad();
                 int edad = jugador.getEdad() != null ? jugador.getEdad() : 0;
                 
-                if (ageFilter.contains("16 - 21") || ageFilter.contains("Sub-21")) {
+                if (ageFilter.equals("sub21")) {
                     if (edad < 16 || edad > 21) continue;
-                } else if (ageFilter.contains("22 - 26") || ageFilter.contains("Madurez")) {
+                } else if (ageFilter.equals("madurez")) {
                     if (edad < 22 || edad > 26) continue;
-                } else if (ageFilter.contains("27+") || ageFilter.contains("Veteranos")) {
+                } else if (ageFilter.equals("veteranos")) {
                     if (edad < 27) continue;
                 }
             }
