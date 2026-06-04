@@ -176,7 +176,7 @@
         <!-- Sidebar Navigation Menu -->
         <ul class="sidebar-menu">
             <li>
-                <a href="#" class="sidebar-link">
+                <a th:href="@{/scouting}" class="sidebar-link">
                     <i class="bi bi-grid-1x2-fill"></i>
                     <span>Dashboard Central</span>
                 </a>
@@ -200,21 +200,9 @@
                 </a>
             </li>
             <li sec:authorize="hasRole('ADMIN')">
-                <a href="#" class="sidebar-link">
-                    <i class="bi bi-graph-up-arrow"></i>
-                    <span>Reportes Financieros</span>
-                </a>
-            </li>
-            <li sec:authorize="hasRole('ADMIN')">
-                <a href="#" class="sidebar-link">
+                <a th:href="@{/scouting/admin/jugadores}" class="sidebar-link">
                     <i class="bi bi-database-fill-gear"></i>
                     <span>Base de Datos La Liga</span>
-                </a>
-            </li>
-            <li sec:authorize="hasRole('ADMIN')">
-                <a href="#" class="sidebar-link">
-                    <i class="bi bi-sliders2"></i>
-                    <span>Configuración</span>
                 </a>
             </li>
         </ul>
