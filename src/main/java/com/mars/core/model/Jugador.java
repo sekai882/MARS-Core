@@ -25,6 +25,8 @@ public class Jugador {
 
     private String nacionalidad;
 
+    private Integer edad;
+
     @Enumerated(EnumType.STRING)
     private Position posicion;
 
@@ -35,12 +37,21 @@ public class Jugador {
     public Jugador() {
     }
 
-    public Jugador(String nombre, Double valorMercado, String nacionalidad, Position posicion, Club club) {
+    public Jugador(String nombre, Double valorMercado, String nacionalidad, Integer edad, Position posicion, Club club) {
         this.nombre = nombre;
         this.valorMercado = valorMercado;
         this.nacionalidad = nacionalidad;
+        this.edad = edad;
         this.posicion = posicion;
         this.club = club;
+    }
+
+    public Integer getEdad() {
+        return edad;
+    }
+
+    public void setEdad(Integer edad) {
+        this.edad = edad;
     }
 
     public Long getId() {

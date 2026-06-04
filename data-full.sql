@@ -22,34 +22,34 @@ INSERT INTO club (id, nombre, presupuesto) VALUES
 
 -- 3. Insertar Jugadores (5 por Club)
 -- Nota: Las posiciones válidas según el enum son: PIVOTE, EXTREMO, DELANTERO, DEFENSA.
-INSERT INTO jugador (id, nombre, valor_mercado, nacionalidad, posicion, club_id) VALUES
+INSERT INTO jugador (id, nombre, valor_mercado, nacionalidad, edad, posicion, club_id) VALUES
 -- Real Madrid CF (Estrellas Caras: Costos muy altos)
-(1, 'Vinícius Júnior', 150000000.0, 'Brasil', 'EXTREMO', 1),
-(2, 'Jude Bellingham', 180000000.0, 'Inglaterra', 'PIVOTE', 1),
-(3, 'Kylian Mbappé', 200000000.0, 'Francia', 'DELANTERO', 1),
-(4, 'Antonio Rüdiger', 120000000.0, 'Alemania', 'DEFENSA', 1),
-(5, 'Federico Valverde', 100000000.0, 'Uruguay', 'PIVOTE', 1),
+(1, 'Vinícius Júnior', 150000000.0, 'Brasil', 25, 'EXTREMO', 1),
+(2, 'Jude Bellingham', 180000000.0, 'Inglaterra', 22, 'PIVOTE', 1),
+(3, 'Kylian Mbappé', 200000000.0, 'Francia', 27, 'DELANTERO', 1),
+(4, 'Antonio Rüdiger', 120000000.0, 'Alemania', 33, 'DEFENSA', 1),
+(5, 'Federico Valverde', 100000000.0, 'Uruguay', 27, 'PIVOTE', 1),
 
 -- FC Barcelona (Estrellas Caras: Costos muy altos)
-(6, 'Robert Lewandowski', 110000000.0, 'Polonia', 'DELANTERO', 2),
-(7, 'Lamine Yamal', 140000000.0, 'España', 'EXTREMO', 2),
-(8, 'Pedri González', 115000000.0, 'España', 'PIVOTE', 2),
-(9, 'Ronald Araujo', 105000000.0, 'Uruguay', 'DEFENSA', 2),
-(10, 'Gavi', 100000000.0, 'España', 'PIVOTE', 2),
+(6, 'Robert Lewandowski', 110000000.0, 'Polonia', 37, 'DELANTERO', 2),
+(7, 'Lamine Yamal', 140000000.0, 'España', 18, 'EXTREMO', 2),
+(8, 'Pedri González', 115000000.0, 'España', 23, 'PIVOTE', 2),
+(9, 'Ronald Araujo', 105000000.0, 'Uruguay', 27, 'DEFENSA', 2),
+(10, 'Gavi', 100000000.0, 'España', 21, 'PIVOTE', 2),
 
 -- Getafe CF (Joyas Ocultas: Rendimiento Élite, Costo Fichaje Muy Bajo < 10M)
-(11, 'Borja Mayoral', 8500000.0, 'España', 'DELANTERO', 3),
-(12, 'Luis Milla', 5200000.0, 'España', 'PIVOTE', 3),
-(13, 'Mason Greenwood', 9000000.0, 'Inglaterra', 'EXTREMO', 3),
-(14, 'Djené Dakonam', 4500000.0, 'Togo', 'DEFENSA', 3),
-(15, 'Mauro Arambarri', 6000000.0, 'Uruguay', 'PIVOTE', 3),
+(11, 'Borja Mayoral', 8500000.0, 'España', 29, 'DELANTERO', 3),
+(12, 'Luis Milla', 5200000.0, 'España', 25, 'PIVOTE', 3),
+(13, 'Mason Greenwood', 9000000.0, 'Inglaterra', 24, 'EXTREMO', 3),
+(14, 'Djené Dakonam', 4500000.0, 'Togo', 33, 'DEFENSA', 3),
+(15, 'Mauro Arambarri', 6000000.0, 'Uruguay', 29, 'PIVOTE', 3),
 
 -- Rayo Vallecano (Joyas Ocultas: Rendimiento Élite, Costo Fichaje Muy Bajo < 10M)
-(16, 'Sergio Camello', 7800000.0, 'España', 'DELANTERO', 4),
-(17, 'Isi Palazón', 8200000.0, 'España', 'EXTREMO', 4),
-(18, 'Óscar Valentín', 4800000.0, 'España', 'PIVOTE', 4),
-(19, 'Florian Lejeune', 3500000.0, 'Francia', 'DEFENSA', 4),
-(20, 'Álvaro García', 6500000.0, 'España', 'EXTREMO', 4);
+(16, 'Sergio Camello', 7800000.0, 'España', 24, 'DELANTERO', 4),
+(17, 'Isi Palazón', 8200000.0, 'España', 30, 'EXTREMO', 4),
+(18, 'Óscar Valentín', 4800000.0, 'España', 32, 'PIVOTE', 4),
+(19, 'Florian Lejeune', 3500000.0, 'Francia', 33, 'DEFENSA', 4),
+(20, 'Álvaro García', 6500000.0, 'España', 28, 'EXTREMO', 4);
 
 -- 4. Insertar Estadísticas Generales (estadistica)
 INSERT INTO estadistica (id, goles, pases_exitosos, minutos, rating, jugador_id) VALUES

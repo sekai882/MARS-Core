@@ -259,7 +259,11 @@ public class MARSServiceImpl implements IMARSService {
 
     @Override
     public Double getAgeFactor(Long jugadorId) {
-        int edad = 21 + (int) (jugadorId % 7);
+        Jugador jugador = jugadorRepository.findById(jugadorId).orElse(null);
+        if (jugador == null || jugador.getEdad() == null) {
+            return 1.0;
+        }
+        int edad = jugador.getEdad();
         if (edad < 23) {
             return 1.2;
         } else if (edad > 30) {
