@@ -123,4 +123,15 @@ public class Jugador {
     public void setEstadisticaDetallada(EstadisticaDetallada estadisticaDetallada) {
         this.estadisticaDetallada = estadisticaDetallada;
     }
+
+    @Transient
+    private transient com.mars.core.model.Estadistica estadistica;
+
+    public com.mars.core.model.Estadistica getEstadistica() {
+        return estadistica;
+    }
+
+    public void setEstadistica(com.mars.core.model.Estadistica estadistica) {
+        this.estadistica = estadistica;
+    }
 }

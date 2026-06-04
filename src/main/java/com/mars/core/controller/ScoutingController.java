@@ -47,6 +47,9 @@ public class ScoutingController {
         }
         // Llamada al nuevo motor de analítica avanzado que recibe FiltroComplejoDTO
         List<Jugador> jugadores = marsService.executeScouting(form);
+        for (Jugador j : jugadores) {
+            j.setEstadistica(marsService.getPlayerStats(j.getId()));
+        }
         model.addAttribute("jugadoresRecomendados", jugadores);
         return "scouting/dashboard";
     }
