@@ -248,11 +248,12 @@ public class MARSServiceImpl implements IMARSService {
     @Override
     public Double calculateProjection(Long jugadorId, int años) {
         Jugador jugador = jugadorRepository.findById(jugadorId).orElse(null);
-        if (jugador == null) {
+        if (jugador == null || jugador.getEdad() == null) {
             return 0.0;
         }
         Double valorMercado = jugador.getValorMercado() != null ? jugador.getValorMercado() : 0.0;
-        double factorEdad = getAgeFactor(jugadorId);
+        int edadFutura = jugador.getEdad() + años;
+        double factorEdad = getAgeFactor(edadFutura);
         Double iem = calculateIEM(jugadorId);
         return (valorMercado * factorEdad) * (1.0 + (iem * 0.03) * años);
     }
@@ -263,13 +264,20 @@ public class MARSServiceImpl implements IMARSService {
         if (jugador == null || jugador.getEdad() == null) {
             return 1.0;
         }
-        int edad = jugador.getEdad();
-        if (edad < 23) {
+        return getAgeFactor(jugador.getEdad());
+    }
+
+    @Override
+    public Double getAgeFactor(int edadFutura) {
+        if (edadFutura < 23) {
             return 1.2;
-        } else if (edad > 30) {
-            return 0.85;
+        } else if (edadFutura >= 23 && edadFutura <= 30) {
+            return 1.0;
+        } else if (edadFutura >= 31 && edadFutura <= 34) {
+            return 0.80;
+        } else {
+            return 0.45;
         }
-        return 1.0;
     }
 
     @Override
