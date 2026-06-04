@@ -97,10 +97,13 @@ public class ScoutingController {
         model.addAttribute("mejorXI", mejorXI);
         model.addAttribute("selectedClubId", effectiveClubId);
         
+        java.util.Map<Long, Estadistica> statsMap = estadisticaRepository.findAll().stream()
+                .collect(java.util.stream.Collectors.toMap(s -> s.getJugador().getId(), s -> s, (s1, s2) -> s1));
+
         // Calcular IEM para cada jugador del XI
         java.util.Map<Long, Double> iemMap = new java.util.HashMap<>();
         for (Jugador j : mejorXI) {
-            iemMap.put(j.getId(), marsService.calculateIEM(j.getId()));
+            iemMap.put(j.getId(), marsService.calculateIEM(j, statsMap.get(j.getId())));
         }
         model.addAttribute("iemMap", iemMap);
 

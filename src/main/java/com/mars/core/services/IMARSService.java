@@ -11,6 +11,7 @@ public interface IMARSService {
     List<Jugador> executeScouting(Double budget, Position pos);
     List<Jugador> executeScouting(FiltroComplejoDTO filtro);
     Double calculateIEM(Long jugadorId);
+    Double calculateIEM(Jugador jugador, Estadistica stats);
     Jugador getPlayerDetail(Long id);
     Estadistica getPlayerStats(Long jugadorId);
     EstadisticaDetallada getDetailedStats(Long jugadorId);

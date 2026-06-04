@@ -76,7 +76,8 @@ public class MARSServiceImpl implements IMARSService {
         this.detailedStatsRepository = detailedStatsRepository;
     }
 
-    private Double calculateIEM(Jugador jugador, Estadistica stats) {
+    @Override
+    public Double calculateIEM(Jugador jugador, Estadistica stats) {
         if (jugador == null || jugador.getValorMercado() == null || jugador.getValorMercado() == 0 || stats == null) {
             return 0.0;
         }
@@ -99,7 +100,7 @@ public class MARSServiceImpl implements IMARSService {
 
     @Override
     public List<Jugador> executeScouting(Double budget, Position pos) {
-        List<Jugador> jugadores = jugadorRepository.findAll();
+        List<Jugador> jugadores = jugadorRepository.findAllEager();
         Map<Long, Estadistica> statsMap = estadisticaRepository.findAll().stream()
                 .collect(Collectors.toMap(s -> s.getJugador().getId(), s -> s, (s1, s2) -> s1));
 
@@ -116,7 +117,7 @@ public class MARSServiceImpl implements IMARSService {
         String clubName = (filtro.getClub() != null && !filtro.getClub().isEmpty()) ? filtro.getClub() : "Todos los Clubes";
         System.out.println("DEBUG: Iniciando matriz de dominancia competitiva para el club: " + clubName);
 
-        List<Jugador> todos = jugadorRepository.findAll();
+        List<Jugador> todos = jugadorRepository.findAllEager();
         List<Jugador> candidatos = new java.util.ArrayList<>();
 
         // 1. Filtra primero los jugadores por posición y presupuesto máximo en un bucle inicial
@@ -319,7 +320,7 @@ public class MARSServiceImpl implements IMARSService {
 
     @Override
     public List<Jugador> suggestBestXI(Long clubId) {
-        List<Jugador> jugadores = jugadorRepository.findAll().stream()
+        List<Jugador> jugadores = jugadorRepository.findAllEager().stream()
                 .filter(j -> clubId == 0L || (j.getClub() != null && j.getClub().getId().equals(clubId)))
                 .collect(Collectors.toList());
 
