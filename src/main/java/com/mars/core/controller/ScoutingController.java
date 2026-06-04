@@ -48,7 +48,7 @@ public class ScoutingController {
         if (result.hasErrors()) {
             return "scouting/dashboard";
         }
-        // Llamada al nuevo motor de analítica avanzado que recibe FiltroComplejoDTO
+        // Invocación del motor analítico avanzado mediante transferencia de DTO complejo
         List<Jugador> jugadores = marsService.executeScouting(form);
         java.util.Map<Long, Estadistica> statsMap = estadisticaRepository.findAll().stream()
                 .collect(java.util.stream.Collectors.toMap(s -> s.getJugador().getId(), s -> s, (s1, s2) -> s1));

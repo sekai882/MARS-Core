@@ -86,7 +86,7 @@ public class AdminController {
             @RequestParam Integer atajadas,
             Model model) {
 
-        // 1. Buscar el club seleccionado
+        // Recuperación y validación de la relación Many-to-One con la entidad Club
         Club club = clubRepository.findById(clubId).orElse(null);
         if (club == null) {
             model.addAttribute("error", "El club seleccionado no existe.");
@@ -95,7 +95,7 @@ public class AdminController {
             return "scouting/admin/nuevo-jugador";
         }
 
-        // 2. Crear y guardar el jugador
+        // Persistencia primaria de la entidad pivote (Jugador)
         Jugador jugador = new Jugador();
         jugador.setNombre(nombre);
         jugador.setEdad(edad);
@@ -105,7 +105,7 @@ public class AdminController {
         jugador.setValorMercado(valorMercado);
         jugadorRepository.save(jugador);
 
-        // 3. Crear y guardar estadísticas base vinculadas al jugador
+        // Persistencia secundaria: Construcción de métricas base vinculadas mediante One-to-One
         Estadistica stats = new Estadistica();
         stats.setGoles(goles);
         stats.setPasesExitosos(pasesExitosos);
@@ -114,7 +114,7 @@ public class AdminController {
         stats.setJugador(jugador);
         estadisticaRepository.save(stats);
 
-        // 4. Crear y guardar estadísticas detalladas vinculadas al jugador
+        // Persistencia avanzada: Construcción de métricas tácticas vinculadas mediante One-to-One
         EstadisticaDetallada detStats = new EstadisticaDetallada();
         detStats.setVelocidadPunta(velocidadPunta);
         detStats.setExpectedGoals(expectedGoals);

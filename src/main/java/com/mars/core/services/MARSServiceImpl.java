@@ -87,11 +87,18 @@ public class MARSServiceImpl implements IMARSService {
         double rating = stats.getRating() != null ? stats.getRating() : 0.0;
 
         double rendimiento = (goles * 50.0) + (pases * 2.0) + (minutos * 0.5) + (rating * 100.0);
+        
+        // Validación defensiva para prevenir indeterminaciones matemáticas (Infinity/NaN) en el cálculo logarítmico del costo financiero.
         double logPrecio = Math.log10(jugador.getValorMercado());
         if (logPrecio <= 0) logPrecio = 1.0;
         
         double iemBase = rendimiento / logPrecio;
-        double iemScaled = iemBase / 100.0; // Factor de normalización
+        double iemScaled = iemBase / 100.0; 
+        
+        /* 
+         * Acotamiento de fronteras absolutas para garantizar la normalización matemática de la escala.
+         * Math.max asegura un suelo estricto de 0.0, mientras que Math.min impone un techo de 10.0.
+         */
         double iemFinal = Math.min(10.0, Math.max(0.0, iemScaled));
         
         return Math.round(iemFinal * 100.0) / 100.0;
@@ -174,12 +181,15 @@ public class MARSServiceImpl implements IMARSService {
         int totalPares = pares.size();
         int kpisEvaluados = (filtro.getPosition() == Position.PORTERO) ? 2 : 4; // PORTERO evalúa 2 métricas, los demás 4
 
-        // 2. Estructura interna para almacenar DominanceScore por candidato
+        // Resolución de la Matriz de Dominancia Competitiva: Búsqueda bidimensional O(N*M)
         Map<Long, Double> dominanceScores = new HashMap<>();
         Map<Long, EstadisticaDetallada> detailedMap = detailedStatsRepository.findAll().stream()
                 .collect(Collectors.toMap(d -> d.getJugador().getId(), d -> d, (d1, d2) -> d1));
 
-        // 3. Bucle Externo (for) que recorra la lista de candidatos prefiltrados
+        /* 
+         * Bucle Externo: Itera sobre la lista de candidatos que superaron los filtros del usuario.
+         * Cada iteración representa al sujeto de estudio actual a evaluar.
+         */
         for (Jugador cand : candidatos) {
             EstadisticaDetallada statsCand = detailedMap.get(cand.getId());
             double velCand = (statsCand != null && statsCand.getVelocidadPunta() != null) ? statsCand.getVelocidadPunta() : 0.0;
@@ -189,7 +199,10 @@ public class MARSServiceImpl implements IMARSService {
 
             int victoryCount = 0;
 
-            // 4. Bucle Interno (for) que recorra la lista completa de todos los jugadores del sistema que jueguen en esa misma posición
+            /* 
+             * Bucle Interno: Cruce de comparación de KPIs relativos contra el grupo de control posicional (pares).
+             * Computa cuántos duelos individuales gana el candidato frente a todos los competidores de la liga en su posición.
+             */
             for (Jugador par : pares) {
                 EstadisticaDetallada statsPar = detailedMap.get(par.getId());
                 double velPar = (statsPar != null && statsPar.getVelocidadPunta() != null) ? statsPar.getVelocidadPunta() : 0.0;
@@ -197,7 +210,11 @@ public class MARSServiceImpl implements IMARSService {
                 int duelosPar = (statsPar != null && statsPar.getDuelosDefensivos() != null) ? statsPar.getDuelosDefensivos() : 0;
                 int pasesPar = (statsPar != null && statsPar.getPasesUltimoTercio() != null) ? statsPar.getPasesUltimoTercio() : 0;
 
-                // 5. Comparaciones condicionales métrica por métrica
+                /* 
+                 * Bifurcación polimórfica posicional:
+                 * El flujo discrimina de forma estricta las métricas de portería (atajadas y pases largos) 
+                 * de los atributos escalares de jugadores de campo (velocidad, xG, duelos).
+                 */
                 if (filtro.getPosition() == Position.PORTERO) {
                     int atajadasCand = (statsCand != null && statsCand.getAtajadas() != null) ? statsCand.getAtajadas() : 0;
                     int atajadasPar = (statsPar != null && statsPar.getAtajadas() != null) ? statsPar.getAtajadas() : 0;
@@ -211,7 +228,7 @@ public class MARSServiceImpl implements IMARSService {
                 }
             }
 
-            // 6. Calcula el porcentaje final de dominancia de mercado
+            // Cálculo del porcentaje final de dominancia de mercado
             double score = 0.0;
             if (totalPares > 0) {
                 score = (double) victoryCount / (totalPares * kpisEvaluados);
