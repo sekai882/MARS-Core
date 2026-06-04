@@ -38,8 +38,16 @@ public class AdminController {
     }
 
     @GetMapping("/jugadores")
-    public String listarJugadores(Model model) {
-        List<Jugador> jugadores = jugadorRepository.findAllEager();
+    public String listarJugadores(
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String dir,
+            Model model) {
+        
+        org.springframework.data.domain.Sort sort = dir.equalsIgnoreCase("desc") 
+                ? org.springframework.data.domain.Sort.by(sortBy).descending() 
+                : org.springframework.data.domain.Sort.by(sortBy).ascending();
+                
+        List<Jugador> jugadores = jugadorRepository.findAllEager(sort);
         java.util.Map<Long, Estadistica> statsMap = estadisticaRepository.findAll().stream()
                 .collect(java.util.stream.Collectors.toMap(s -> s.getJugador().getId(), s -> s, (s1, s2) -> s1));
         for (Jugador j : jugadores) {
