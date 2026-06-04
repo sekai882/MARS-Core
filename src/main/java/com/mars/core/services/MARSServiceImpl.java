@@ -283,7 +283,7 @@ public class MARSServiceImpl implements IMARSService {
     @Override
     public List<Jugador> suggestBestXI(Long clubId) {
         List<Jugador> jugadores = jugadorRepository.findAll().stream()
-                .filter(j -> j.getClub() != null && j.getClub().getId().equals(clubId))
+                .filter(j -> clubId == 0L || (j.getClub() != null && j.getClub().getId().equals(clubId)))
                 .collect(Collectors.toList());
 
         // Mapa para almacenar los scores ajustados con el bonus de química

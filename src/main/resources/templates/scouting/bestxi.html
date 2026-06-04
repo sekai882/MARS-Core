@@ -103,7 +103,7 @@
                 <div class="col-md-8">
                     <label for="clubId" class="form-label fw-semibold text-muted">Seleccionar Club</label>
                     <select class="form-select bg-dark text-light border-secondary" id="clubId" name="clubId" required>
-                        <option value="" disabled th:selected="${selectedClubId == null}">Seleccione un club...</option>
+                        <option value="0" th:selected="${selectedClubId == null || selectedClubId == 0}">🏆 Todos los Clubes (XI General)</option>
                         <option th:each="club : ${clubes}" th:value="${club.id}" th:text="${club.nombre}"
                                 th:selected="${selectedClubId != null && selectedClubId == club.id}">Club</option>
                     </select>

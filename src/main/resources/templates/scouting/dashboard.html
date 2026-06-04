@@ -193,12 +193,6 @@
                     <span>Mejor XI</span>
                 </a>
             </li>
-            <li>
-                <a href="#" class="sidebar-link">
-                    <i class="bi bi-people-fill"></i>
-                    <span>Gestión de Plantilla</span>
-                </a>
-            </li>
             <li sec:authorize="hasRole('ADMIN')">
                 <a th:href="@{/scouting/admin/jugadores}" class="sidebar-link">
                     <i class="bi bi-database-fill-gear"></i>

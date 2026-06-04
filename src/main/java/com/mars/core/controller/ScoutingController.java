@@ -84,18 +84,17 @@ public class ScoutingController {
         List<Club> clubes = clubRepository.findAll();
         model.addAttribute("clubes", clubes);
 
-        if (clubId != null) {
-            List<Jugador> mejorXI = marsService.suggestBestXI(clubId);
-            model.addAttribute("mejorXI", mejorXI);
-            model.addAttribute("selectedClubId", clubId);
-            
-            // Calcular IEM para cada jugador del XI
-            java.util.Map<Long, Double> iemMap = new java.util.HashMap<>();
-            for (Jugador j : mejorXI) {
-                iemMap.put(j.getId(), marsService.calculateIEM(j.getId()));
-            }
-            model.addAttribute("iemMap", iemMap);
+        Long effectiveClubId = (clubId != null) ? clubId : 0L;
+        List<Jugador> mejorXI = marsService.suggestBestXI(effectiveClubId);
+        model.addAttribute("mejorXI", mejorXI);
+        model.addAttribute("selectedClubId", effectiveClubId);
+        
+        // Calcular IEM para cada jugador del XI
+        java.util.Map<Long, Double> iemMap = new java.util.HashMap<>();
+        for (Jugador j : mejorXI) {
+            iemMap.put(j.getId(), marsService.calculateIEM(j.getId()));
         }
+        model.addAttribute("iemMap", iemMap);
 
         return "scouting/bestxi";
     }

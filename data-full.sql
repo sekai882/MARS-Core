@@ -65,7 +65,21 @@ INSERT INTO jugador (id, nombre, valor_mercado, nacionalidad, edad, posicion, cl
 (17, 'Isi Palazón', 8200000.0, 'España', 30, 'EXTREMO', 4),
 (18, 'Óscar Valentín', 4800000.0, 'España', 32, 'PIVOTE', 4),
 (19, 'Florian Lejeune', 3500000.0, 'Francia', 33, 'DEFENSA', 4),
-(20, 'Álvaro García', 6500000.0, 'España', 28, 'EXTREMO', 4);
+(20, 'Álvaro García', 6500000.0, 'España', 28, 'EXTREMO', 4),
+
+-- Villarreal CF
+(21, 'Gerard Moreno', 15000000.0, 'España', 32, 'DELANTERO', 5),
+(22, 'Dani Parejo', 5000000.0, 'España', 35, 'PIVOTE', 5),
+(23, 'Alex Baena', 40000000.0, 'España', 22, 'EXTREMO', 5),
+(24, 'Yeremy Pino', 30000000.0, 'España', 21, 'EXTREMO', 5),
+(25, 'Alexander Sorloth', 25000000.0, 'Noruega', 28, 'DELANTERO', 5),
+
+-- Atlético de Madrid
+(26, 'Antoine Griezmann', 25000000.0, 'Francia', 33, 'DELANTERO', 6),
+(27, 'Koke Resurrección', 12000000.0, 'España', 32, 'PIVOTE', 6),
+(28, 'Marcos Llorente', 30000000.0, 'España', 29, 'PIVOTE', 6),
+(29, 'Jan Oblak', 30000000.0, 'Eslovenia', 31, 'DEFENSA', 6),
+(30, 'Álvaro Morata', 16000000.0, 'España', 31, 'DELANTERO', 6);
 
 -- 4. Insertar Estadísticas Generales (estadistica)
 INSERT INTO estadistica (id, goles, pases_exitosos, minutos, rating, jugador_id) VALUES
@@ -95,7 +109,21 @@ INSERT INTO estadistica (id, goles, pases_exitosos, minutos, rating, jugador_id)
 (17, 15, 610, 2900, 8.4, 17),
 (18, 3, 980, 2800, 8.2, 18),
 (19, 4, 620, 3100, 8.1, 19),
-(20, 13, 430, 2500, 8.2, 20);
+(20, 13, 430, 2500, 8.2, 20),
+
+-- Villarreal CF
+(21, 20, 400, 2600, 8.3, 21),
+(22, 4, 1200, 3000, 8.1, 22),
+(23, 10, 800, 2800, 8.2, 23),
+(24, 8, 600, 2500, 8.0, 24),
+(25, 23, 300, 2700, 8.4, 25),
+
+-- Atlético de Madrid
+(26, 18, 800, 3100, 8.5, 26),
+(27, 2, 1300, 3200, 8.2, 27),
+(28, 6, 900, 2900, 8.3, 28),
+(29, 0, 400, 3400, 8.0, 29),
+(30, 21, 350, 2800, 8.2, 30);
 
 -- 5. Insertar Estadísticas Granulares (estadistica_detallada)
 INSERT INTO estadistica_detallada (id, velocidad_punta, pases_ultimo_tercio, duelos_defensivos, expected_goals, jugador_id) VALUES
@@ -125,7 +153,21 @@ INSERT INTO estadistica_detallada (id, velocidad_punta, pases_ultimo_tercio, due
 (17, 34.5, 195, 48, 14.8, 17),
 (18, 31.2, 130, 195, 2.8, 18),
 (19, 32.1, 55, 185, 3.5, 19),
-(20, 36.8, 125, 35, 12.1, 20);
+(20, 36.8, 125, 35, 12.1, 20),
+
+-- Villarreal CF
+(21, 33.5, 120, 40, 20.5, 21),
+(22, 30.5, 250, 60, 3.5, 22),
+(23, 34.8, 180, 50, 10.2, 23),
+(24, 35.1, 140, 45, 8.5, 24),
+(25, 34.2, 80, 30, 22.8, 25),
+
+-- Atlético de Madrid
+(26, 33.8, 220, 45, 19.5, 26),
+(27, 31.5, 280, 80, 2.8, 27),
+(28, 35.5, 190, 75, 5.5, 28),
+(29, 28.5, 30, 10, 0.0, 29),
+(30, 33.2, 90, 35, 21.0, 30);
 
 -- 6. Ajustar secuencias de ID de PostgreSQL para prevenir colisiones en ejecuciones futuras
 SELECT setval('club_id_seq', (SELECT MAX(id) FROM club));
