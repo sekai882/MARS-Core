@@ -295,7 +295,9 @@ public class MARSServiceImpl implements IMARSService {
         Double iem = calculateIEM(jugadorId);
         
         double performanceBonus = (iem * 0.03) * años;
-        if (edadFutura >= 31) {
+        if (edadFutura >= 35) {
+            performanceBonus = 0.0;
+        } else if (edadFutura >= 31) {
             performanceBonus *= 0.15;
         }
         
@@ -320,7 +322,8 @@ public class MARSServiceImpl implements IMARSService {
         } else if (edadFutura >= 31 && edadFutura <= 34) {
             return 0.70;
         } else {
-            return 0.25;
+            double factor = 0.25 - ((edadFutura - 35) * 0.04);
+            return Math.max(0.05, factor);
         }
     }
 

@@ -193,7 +193,7 @@
                     <span>Mejor XI</span>
                 </a>
             </li>
-            <li sec:authorize="hasRole('ADMIN')">
+            <li>
                 <a th:href="@{/scouting/admin/jugadores}" class="sidebar-link">
                     <i class="bi bi-database-fill-gear"></i>
                     <span>Base de Datos La Liga</span>
@@ -258,6 +258,9 @@
                 <p class="text-secondary mb-0" style="font-size: 0.9rem;">
                     Buscador estratégico de rendimiento. Configura variables complejas y ejecuta el algoritmo IEM.
                 </p>
+                <div class="mt-2 text-muted" style="font-size: 0.75rem;">
+                    <span class="fw-bold text-light">Escala de Eficiencia IEM:</span> &lt; 1.0 Costoso/Ineficiente | 1.0 - 5.0 Estándar de Mercado | &gt; 5.0 Alta Rentabilidad (Joyas Ocultas / Moneyball)
+                </div>
             </div>
 
             <!-- Filters Panel (Card multidetallada) -->
