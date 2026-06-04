@@ -293,7 +293,13 @@ public class MARSServiceImpl implements IMARSService {
         int edadFutura = jugador.getEdad() + años;
         double factorEdad = getAgeFactor(edadFutura);
         Double iem = calculateIEM(jugadorId);
-        return (valorMercado * factorEdad) * (1.0 + (iem * 0.03) * años);
+        
+        double performanceBonus = (iem * 0.03) * años;
+        if (edadFutura >= 31) {
+            performanceBonus *= 0.15;
+        }
+        
+        return (valorMercado * factorEdad) * (1.0 + performanceBonus);
     }
 
     @Override
@@ -312,9 +318,9 @@ public class MARSServiceImpl implements IMARSService {
         } else if (edadFutura >= 23 && edadFutura <= 30) {
             return 1.0;
         } else if (edadFutura >= 31 && edadFutura <= 34) {
-            return 0.80;
+            return 0.70;
         } else {
-            return 0.45;
+            return 0.25;
         }
     }
 
