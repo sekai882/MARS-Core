@@ -375,10 +375,13 @@
                                             <th class="py-3">CLUB</th>
                                             <th class="py-3">NACIONALIDAD</th>
                                             <th class="py-3 text-end">VALOR DE MERCADO</th>
-                                            <th class="text-center py-3">VELOCIDAD</th>
-                                            <th class="text-center py-3">EXPECTED GOALS (xG)</th>
-                                            <th class="text-center py-3">DUELOS DEF.</th>
-                                            <th class="text-center py-3">PASES ULT. TERCIO</th>
+                                            <th th:unless="${scoutingForm.position.name() == 'PORTERO'}" class="text-center py-3">VELOCIDAD</th>
+                                            <th th:unless="${scoutingForm.position.name() == 'PORTERO'}" class="text-center py-3">EXPECTED GOALS (xG)</th>
+                                            <th th:unless="${scoutingForm.position.name() == 'PORTERO'}" class="text-center py-3">DUELOS DEF.</th>
+                                            <th th:unless="${scoutingForm.position.name() == 'PORTERO'}" class="text-center py-3">PASES ULT. TERCIO</th>
+                                            <th th:if="${scoutingForm.position.name() == 'PORTERO'}" class="text-center py-3">ATAJADAS</th>
+                                            <th th:if="${scoutingForm.position.name() == 'PORTERO'}" class="text-center py-3">PASES TOTALES</th>
+                                            <th th:if="${scoutingForm.position.name() == 'PORTERO'}" class="text-center py-3">MINUTOS JUGADOS</th>
                                             <th class="text-center py-3" style="width: 15%;">ÍNDICE DOMINANCIA</th>
                                         </tr>
                                     </thead>
@@ -391,10 +394,13 @@
                                             <td class="py-3" th:text="${jugador.club != null ? jugador.club.nombre : 'Agente Libre'}">Club</td>
                                             <td class="py-3" th:text="${jugador.nacionalidad}">Nacionalidad</td>
                                             <td class="text-end fw-bold text-success py-3" th:text="${#numbers.formatDecimal(jugador.valorMercado, 1, 'POINT', 0, 'COMMA')} + ' €'">Valor</td>
-                                            <td class="text-center py-3" th:text="${jugador.estadisticaDetallada != null && jugador.estadisticaDetallada.velocidadPunta != null ? #numbers.formatDecimal(jugador.estadisticaDetallada.velocidadPunta, 1, 2) + ' km/h' : '0.00 km/h'}">33.5</td>
-                                            <td class="text-center py-3" th:text="${jugador.estadisticaDetallada != null && jugador.estadisticaDetallada.expectedGoals != null ? #numbers.formatDecimal(jugador.estadisticaDetallada.expectedGoals, 1, 2) : '0.00'}">0.45</td>
-                                            <td class="text-center py-3" th:text="${jugador.estadisticaDetallada != null && jugador.estadisticaDetallada.duelosDefensivos != null ? jugador.estadisticaDetallada.duelosDefensivos : '0'}">5</td>
-                                            <td class="text-center py-3" th:text="${jugador.estadisticaDetallada != null && jugador.estadisticaDetallada.pasesUltimoTercio != null ? jugador.estadisticaDetallada.pasesUltimoTercio : '0'}">25</td>
+                                            <td th:unless="${scoutingForm.position.name() == 'PORTERO'}" class="text-center py-3" th:text="${jugador.estadisticaDetallada != null && jugador.estadisticaDetallada.velocidadPunta != null ? #numbers.formatDecimal(jugador.estadisticaDetallada.velocidadPunta, 1, 2) + ' km/h' : '0.00 km/h'}">33.5</td>
+                                            <td th:unless="${scoutingForm.position.name() == 'PORTERO'}" class="text-center py-3" th:text="${jugador.estadisticaDetallada != null && jugador.estadisticaDetallada.expectedGoals != null ? #numbers.formatDecimal(jugador.estadisticaDetallada.expectedGoals, 1, 2) : '0.00'}">0.45</td>
+                                            <td th:unless="${scoutingForm.position.name() == 'PORTERO'}" class="text-center py-3" th:text="${jugador.estadisticaDetallada != null && jugador.estadisticaDetallada.duelosDefensivos != null ? jugador.estadisticaDetallada.duelosDefensivos : '0'}">5</td>
+                                            <td th:unless="${scoutingForm.position.name() == 'PORTERO'}" class="text-center py-3" th:text="${jugador.estadisticaDetallada != null && jugador.estadisticaDetallada.pasesUltimoTercio != null ? jugador.estadisticaDetallada.pasesUltimoTercio : '0'}">25</td>
+                                            <td th:if="${scoutingForm.position.name() == 'PORTERO'}" class="text-center py-3" th:text="${jugador.estadisticaDetallada != null && jugador.estadisticaDetallada.atajadas != null ? jugador.estadisticaDetallada.atajadas : '0'}">85</td>
+                                            <td th:if="${scoutingForm.position.name() == 'PORTERO'}" class="text-center py-3" th:text="${jugador.estadistica != null && jugador.estadistica.pasesExitosos != null ? jugador.estadistica.pasesExitosos : '0'}">400</td>
+                                            <td th:if="${scoutingForm.position.name() == 'PORTERO'}" class="text-center py-3" th:text="${jugador.estadistica != null && jugador.estadistica.minutos != null ? jugador.estadistica.minutos : '0'}">2700</td>
                                             <td class="text-center py-3">
                                                 <span class="badge bg-primary text-white rounded-1 py-2 px-3 fw-bold border border-primary-subtle" th:text="${#numbers.formatDecimal(jugador.dominanceScore * 100, 1, 1)} + '%'">100.0%</span>
                                             </td>

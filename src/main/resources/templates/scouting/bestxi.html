@@ -12,161 +12,294 @@
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
         body {
+            font-family: 'Inter', sans-serif;
             background-color: #121212;
             color: #e0e0e0;
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
+            overflow-x: hidden;
         }
+
+        /* Flat Layout Structure */
+        .sidebar {
+            width: 280px;
+            background-color: #1a1a1a;
+            border-right: 1px solid #2d2d2d;
+            min-height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-navbar {
+            background-color: #1a1a1a;
+            border-bottom: 1px solid #2d2d2d;
+            padding: 0.85rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        /* Sidebar Styling */
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding-left: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            padding: 0.75rem 1rem;
+            color: #888888;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-link:hover {
+            color: #ffffff;
+            background-color: #222222;
+        }
+
+        .sidebar-link.active {
+            color: #ffffff;
+            background-color: #2a2a2a;
+            border-left: 3px solid #0d6efd;
+            border-radius: 0 4px 4px 0;
+            padding-left: calc(1rem - 3px);
+        }
+
+        /* Cards & Utilities */
         .card {
             background-color: #1e1e1e;
             border: 1px solid #2d2d2d;
             border-radius: 4px;
+            box-shadow: none !important;
         }
+
         .table {
             --bs-table-bg: transparent;
             --bs-table-hover-bg: #2a2a2a;
             color: #e0e0e0;
         }
+
         .table th {
             color: #888888;
             font-weight: 600;
         }
+
         .badge-position {
             background-color: #333333;
             color: #ffffff;
             border: 1px solid #444444;
+            font-weight: 500;
             border-radius: 2px;
         }
+
         .text-iem {
             color: #0d6efd;
             font-weight: 800;
-        }
-        .chemistry-badge {
-            background-color: #198754;
-            color: #fff;
-            font-size: 0.7rem;
-            padding: 2px 6px;
-            border-radius: 3px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="/scouting">
-                <span class="fs-4 fw-bold text-info">MARS</span>
-                <span class="mx-2 text-muted">|</span>
-                <span class="fs-6 text-light opacity-75">Mejor XI</span>
-            </a>
-            <div class="d-flex align-items-center gap-2">
-                <span class="text-muted" style="font-size: 0.8rem;" sec:authentication="name">Usuario</span>
-                <form th:action="@{/logout}" method="post" class="m-0">
-                    <button type="submit" class="btn btn-outline-secondary btn-sm">Cerrar Sesión</button>
+    <!-- Sidebar Layout -->
+    <div class="sidebar">
+        <!-- Brand Header -->
+        <div class="sidebar-brand">
+            <span class="fs-4 fw-extrabold text-info tracking-wider">MARS</span>
+            <span class="badge bg-primary px-2 py-1 fs-6" style="font-size: 0.65rem !important;">ANALYTICS</span>
+        </div>
+
+        <!-- Sidebar Navigation Menu -->
+        <ul class="sidebar-menu">
+            <li>
+                <a th:href="@{/scouting}" class="sidebar-link">
+                    <i class="bi bi-grid-1x2-fill"></i>
+                    <span>Dashboard Central</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/scouting}" class="sidebar-link">
+                    <i class="bi bi-search-heart-fill"></i>
+                    <span>Scouting Moneyball</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/scouting/bestxi}" class="sidebar-link active">
+                    <i class="bi bi-trophy-fill"></i>
+                    <span>Mejor XI</span>
+                </a>
+            </li>
+            <li sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/scouting/admin/jugadores}" class="sidebar-link">
+                    <i class="bi bi-database-fill-gear"></i>
+                    <span>Base de Datos La Liga</span>
+                </a>
+            </li>
+        </ul>
+
+        <!-- Sidebar Footer Info -->
+        <div class="mt-auto pt-3 border-top border-secondary opacity-50" style="font-size: 0.75rem;">
+            <div>Usuario: <span sec:authentication="name">Usuario</span></div>
+            <div>Rol: <span sec:authentication="principal.authorities[0].authority">Rol</span></div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- Top Navbar Header -->
+        <div class="top-navbar">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a th:href="@{/scouting}" class="text-info text-decoration-none">Scouting</a></li>
+                    <li class="breadcrumb-item active text-muted" aria-current="page">Mejor XI</li>
+                </ol>
+            </nav>
+
+            <!-- Profile and Notifications -->
+            <div class="d-flex align-items-center gap-3">
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-color: #2d2d2d; background-color: #1e1e1e;">
+                        <div class="rounded-circle bg-info d-flex align-items-center justify-content-center text-dark fw-bold" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                            US
+                        </div>
+                        <div class="text-start d-none d-sm-block">
+                            <div class="fw-semibold text-light" style="font-size: 0.8rem; line-height: 1.1;"><span sec:authentication="name">Usuario</span></div>
+                            <small class="text-muted" style="font-size: 0.65rem;"><span sec:authentication="principal.authorities[0].authority">Rol</span></small>
+                        </div>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <form th:action="@{/logout}" method="post" class="m-0 p-0">
+                                <button type="submit" class="dropdown-item text-danger border-0 bg-transparent" style="cursor:pointer;">
+                                    <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Container -->
+        <div class="container-fluid p-4">
+            
+            <!-- Header -->
+            <div class="card p-4 mb-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                    <div>
+                        <span class="text-info fw-semibold text-uppercase fs-6">Análisis de Alineación Óptima</span>
+                        <h1 class="fw-bold text-light mt-1 mb-0">Mejor XI con Química</h1>
+                        <p class="text-muted mt-1 mb-0" style="font-size: 0.85rem;">
+                            Algoritmo de sinergia: +5% bonus cuando un Defensa y un Pivote comparten nacionalidad.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Club Selector -->
+            <div class="card p-4 mb-4">
+                <form th:action="@{/scouting/bestxi}" method="get" class="row g-3 align-items-end">
+                    <div class="col-md-8">
+                        <label for="clubId" class="form-label fw-semibold text-muted">Seleccionar Club</label>
+                        <select class="form-select bg-dark text-light border-secondary" id="clubId" name="clubId" required>
+                            <option value="0" th:selected="${selectedClubId == null || selectedClubId == 0}">🏆 Todos los Clubes (XI General)</option>
+                            <option th:each="club : ${clubes}" th:value="${club.id}" th:text="${club.nombre}"
+                                    th:selected="${selectedClubId != null && selectedClubId == club.id}">Club</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-info w-100 fw-semibold">
+                            <i class="bi bi-trophy-fill me-1"></i> Generar Mejor XI
+                        </button>
+                    </div>
                 </form>
             </div>
-        </div>
-    </nav>
 
-    <!-- Main Container -->
-    <div class="container mt-5">
-        <!-- Back Button -->
-        <div class="mb-4">
-            <a th:href="@{/scouting}" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2 fw-semibold">
-                <i class="bi bi-arrow-left"></i>
-                Volver al Buscador
-            </a>
-        </div>
+            <!-- Results Table -->
+            <div th:if="${mejorXI != null}" class="card p-4">
+                <h5 class="fw-bold text-light mb-3">
+                    <i class="bi bi-trophy-fill text-warning me-2"></i>Alineación Óptima
+                    <span class="badge bg-info ms-2" th:text="${#lists.size(mejorXI)} + ' jugadores'">0 jugadores</span>
+                </h5>
 
-        <!-- Header -->
-        <div class="card p-4 mb-4">
-            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
-                <div>
-                    <span class="text-info fw-semibold text-uppercase fs-6">Análisis de Alineación Óptima</span>
-                    <h1 class="fw-bold text-light mt-1 mb-0">Mejor XI con Química</h1>
-                    <p class="text-muted mt-1 mb-0" style="font-size: 0.85rem;">
-                        Algoritmo de sinergia: +5% bonus cuando un Defensa y un Pivote comparten nacionalidad.
-                    </p>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Jugador</th>
+                                <th>Posición</th>
+                                <th>Nacionalidad</th>
+                                <th>Valor de Mercado</th>
+                                <th>IEM (Eficiencia)</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="jugador, iter : ${mejorXI}">
+                                <td>
+                                    <span class="fw-bold text-info" th:text="${iter.index + 1}">1</span>
+                                </td>
+                                <td>
+                                    <span class="fw-semibold text-light" th:text="${jugador.nombre}">Nombre</span>
+                                </td>
+                                <td>
+                                    <span class="badge badge-position px-2 py-1" th:text="${jugador.posicion}">POS</span>
+                                </td>
+                                <td>
+                                    <span th:text="${jugador.nacionalidad}">Nacionalidad</span>
+                                </td>
+                                <td>
+                                    <span th:text="'$' + ${#numbers.formatDecimal(jugador.valorMercado, 1, 'COMMA', 0, 'POINT')}">$0</span>
+                                </td>
+                                <td>
+                                    <span class="text-iem" th:text="${#numbers.formatDecimal(iemMap[jugador.id], 1, 2)}">0.00</span>
+                                </td>
+                                <td>
+                                    <a th:href="@{'/scouting/analisis/' + ${jugador.id}}" class="btn btn-sm btn-outline-info">
+                                        <i class="bi bi-eye"></i> Ver
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
+
         </div>
-
-        <!-- Club Selector -->
-        <div class="card p-4 mb-4">
-            <form th:action="@{/scouting/bestxi}" method="get" class="row g-3 align-items-end">
-                <div class="col-md-8">
-                    <label for="clubId" class="form-label fw-semibold text-muted">Seleccionar Club</label>
-                    <select class="form-select bg-dark text-light border-secondary" id="clubId" name="clubId" required>
-                        <option value="0" th:selected="${selectedClubId == null || selectedClubId == 0}">🏆 Todos los Clubes (XI General)</option>
-                        <option th:each="club : ${clubes}" th:value="${club.id}" th:text="${club.nombre}"
-                                th:selected="${selectedClubId != null && selectedClubId == club.id}">Club</option>
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <button type="submit" class="btn btn-info w-100 fw-semibold">
-                        <i class="bi bi-trophy-fill me-1"></i> Generar Mejor XI
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <!-- Results Table -->
-        <div th:if="${mejorXI != null}" class="card p-4">
-            <h5 class="fw-bold text-light mb-3">
-                <i class="bi bi-trophy-fill text-warning me-2"></i>Alineación Óptima
-                <span class="badge bg-info ms-2" th:text="${#lists.size(mejorXI)} + ' jugadores'">0 jugadores</span>
-            </h5>
-
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Jugador</th>
-                            <th>Posición</th>
-                            <th>Nacionalidad</th>
-                            <th>Valor de Mercado</th>
-                            <th>IEM (Eficiencia)</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="jugador, iter : ${mejorXI}">
-                            <td>
-                                <span class="fw-bold text-info" th:text="${iter.index + 1}">1</span>
-                            </td>
-                            <td>
-                                <span class="fw-semibold text-light" th:text="${jugador.nombre}">Nombre</span>
-                            </td>
-                            <td>
-                                <span class="badge badge-position px-2 py-1" th:text="${jugador.posicion}">POS</span>
-                            </td>
-                            <td>
-                                <span th:text="${jugador.nacionalidad}">Nacionalidad</span>
-                            </td>
-                            <td>
-                                <span th:text="'$' + ${#numbers.formatDecimal(jugador.valorMercado, 1, 'COMMA', 0, 'POINT')}">$0</span>
-                            </td>
-                            <td>
-                                <span class="text-iem" th:text="${#numbers.formatDecimal(iemMap[jugador.id], 1, 2)}">0.00</span>
-                            </td>
-                            <td>
-                                <a th:href="@{'/scouting/analisis/' + ${jugador.id}}" class="btn btn-sm btn-outline-info">
-                                    <i class="bi bi-eye"></i> Ver
-                                </a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
     </div>
 
     <!-- Bootstrap JS -->
