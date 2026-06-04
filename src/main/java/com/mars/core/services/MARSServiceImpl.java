@@ -86,7 +86,15 @@ public class MARSServiceImpl implements IMARSService {
         int minutos = stats.getMinutos();
         double rating = stats.getRating() != null ? stats.getRating() : 0.0;
 
-        return ((goles * 50.0) + (pases * 2.0) + (minutos * 0.5) + (rating * 100.0)) / (jugador.getValorMercado() / 100000.0);
+        double rendimiento = (goles * 50.0) + (pases * 2.0) + (minutos * 0.5) + (rating * 100.0);
+        double logPrecio = Math.log10(jugador.getValorMercado());
+        if (logPrecio <= 0) logPrecio = 1.0;
+        
+        double iemBase = rendimiento / logPrecio;
+        double iemScaled = iemBase / 100.0; // Factor de normalización
+        double iemFinal = Math.min(10.0, Math.max(0.0, iemScaled));
+        
+        return Math.round(iemFinal * 100.0) / 100.0;
     }
 
     @Override
