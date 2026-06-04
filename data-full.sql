@@ -18,7 +18,23 @@ INSERT INTO club (id, nombre, presupuesto) VALUES
 (1, 'Real Madrid CF', 900000000.0),
 (2, 'FC Barcelona', 800000000.0),
 (3, 'Getafe CF', 50000000.0),
-(4, 'Rayo Vallecano', 45000000.0);
+(4, 'Rayo Vallecano', 45000000.0),
+(5, 'Villarreal CF', 150000000.0),
+(6, 'Atlético de Madrid', 350000000.0),
+(7, 'Real Betis', 120000000.0),
+(8, 'Celta de Vigo', 65000000.0),
+(9, 'Valencia CF', 80000000.0),
+(10, 'Real Sociedad', 140000000.0),
+(11, 'RCD Espanyol', 45000000.0),
+(12, 'Athletic Club', 110000000.0),
+(13, 'Sevilla FC', 90000000.0),
+(14, 'Deportivo Alavés', 40000000.0),
+(15, 'Elche CF', 35000000.0),
+(16, 'Levante UD', 38000000.0),
+(17, 'CA Osasuna', 42000000.0),
+(18, 'RCD Mallorca', 40000000.0),
+(19, 'Girona FC', 70000000.0),
+(20, 'Real Oviedo', 30000000.0);
 
 -- 3. Insertar Jugadores (5 por Club)
 -- Nota: Las posiciones válidas según el enum son: PIVOTE, EXTREMO, DELANTERO, DEFENSA.
