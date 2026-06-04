@@ -223,6 +223,7 @@
                                 <th class="py-3 text-end">
                                     <a th:href="@{/scouting/admin/jugadores(sortBy='valorMercado', dir=${param.sortBy != null && param.sortBy[0] == 'valorMercado' && param.dir[0] == 'asc' ? 'desc' : 'asc'})}" class="text-secondary text-decoration-none">VALOR DE MERCADO ⇅</a>
                                 </th>
+                                <th class="py-3 text-center" sec:authorize="hasRole('ADMIN')">ACCIONES</th>
                             </tr>
                         </thead>
                         <tbody class="border-secondary">
@@ -238,6 +239,18 @@
                                 </td>
                                 <td class="py-3" th:text="${jugador.nacionalidad}">Nacionalidad</td>
                                 <td class="text-end fw-bold text-success py-3" th:text="${#numbers.formatDecimal(jugador.valorMercado, 1, 'POINT', 0, 'COMMA')} + ' €'">Valor</td>
+                                <td class="py-3 text-center" sec:authorize="hasRole('ADMIN')">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a th:href="@{/scouting/admin/jugadores/editar/{id}(id=${jugador.id})}" class="btn btn-sm btn-outline-info">
+                                            <i class="bi bi-pencil-square"></i> Editar
+                                        </a>
+                                        <form th:action="@{/scouting/admin/jugadores/eliminar/{id}(id=${jugador.id})}" method="post" class="m-0" onsubmit="return confirm('¿Estás seguro de eliminar este jugador? Esta acción no se puede deshacer.');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash-fill"></i> Eliminar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
                             </tr>
                         </tbody>
                     </table>

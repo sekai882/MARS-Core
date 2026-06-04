@@ -37,6 +37,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/login", "/registro", "/css/**", "/js/**", "/images/**").permitAll()
                 .requestMatchers("/scouting/admin/jugadores/nuevo", "/scouting/admin/jugadores/nuevo/**").hasRole("ADMIN")
+                .requestMatchers("/scouting/admin/jugadores/editar/**", "/scouting/admin/jugadores/eliminar/**").hasRole("ADMIN")
                 .requestMatchers("/scouting/admin/jugadores").hasAnyRole("ADMIN", "DIRECTOR")
                 .requestMatchers("/scouting/admin/**").hasRole("ADMIN")
                 .requestMatchers("/scouting/**").authenticated()

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MARS | Editar Jugador</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+        .sidebar {
+            width: 280px;
+            background-color: #1a1a1a;
+            border-right: 1px solid #2d2d2d;
+            min-height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .top-navbar {
+            background-color: #1a1a1a;
+            border-bottom: 1px solid #2d2d2d;
+            padding: 0.85rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding-left: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            padding: 0.75rem 1rem;
+            color: #888888;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .sidebar-link:hover {
+            color: #ffffff;
+            background-color: #222222;
+        }
+        .sidebar-link.active {
+            color: #ffffff;
+            background-color: #2a2a2a;
+            border-left: 3px solid #0d6efd;
+            border-radius: 0 4px 4px 0;
+            padding-left: calc(1rem - 3px);
+        }
+        .card {
+            background-color: #1e1e1e;
+            border: 1px solid #2d2d2d;
+            border-radius: 4px;
+            box-shadow: none !important;
+        }
+        .btn-primary {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+            border-radius: 4px;
+            font-weight: 600;
+            box-shadow: none !important;
+        }
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0a58ca;
+        }
+        .form-control, .form-select, .input-group-text {
+            background-color: #2a2a2a !important;
+            border: 1px solid #2d2d2d !important;
+            color: #e0e0e0 !important;
+            border-radius: 4px !important;
+            box-shadow: none !important;
+        }
+        .form-control::placeholder {
+            color: #666666;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #0d6efd !important;
+        }
+        .section-divider {
+            border-top: 1px solid #2d2d2d;
+            margin: 1.5rem 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Layout -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <span class="fs-4 fw-extrabold text-info tracking-wider">MARS</span>
+            <span class="badge bg-primary px-2 py-1 fs-6" style="font-size: 0.65rem !important;">ANALYTICS</span>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li>
+                <a th:href="@{/scouting}" class="sidebar-link">
+                    <i class="bi bi-grid-1x2-fill"></i>
+                    <span>Dashboard Central</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/scouting}" class="sidebar-link">
+                    <i class="bi bi-search-heart-fill"></i>
+                    <span>Scouting Moneyball</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/scouting/bestxi}" class="sidebar-link">
+                    <i class="bi bi-trophy-fill"></i>
+                    <span>Mejor XI</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/scouting/admin/jugadores}" class="sidebar-link active">
+                    <i class="bi bi-database-fill-gear"></i>
+                    <span>Base de Datos La Liga</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="mt-auto pt-3 border-top border-secondary opacity-50" style="font-size: 0.75rem;">
+            <div>Usuario: <span sec:authentication="name">Usuario</span></div>
+            <div>Rol: <span sec:authentication="principal.authorities[0].authority">Rol</span></div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <div class="top-navbar">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a th:href="@{/scouting}" class="text-info text-decoration-none">Scouting</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/scouting/admin/jugadores}" class="text-info text-decoration-none">Base de Datos</a></li>
+                    <li class="breadcrumb-item active text-muted" aria-current="page">Editar Jugador</li>
+                </ol>
+            </nav>
+            <div class="d-flex align-items-center gap-3">
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-color: #2d2d2d; background-color: #1e1e1e;">
+                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white fw-bold" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                            AD
+                        </div>
+                        <div class="text-start d-none d-sm-block">
+                            <div class="fw-semibold text-light" style="font-size: 0.8rem; line-height: 1.1;"><span sec:authentication="name">Usuario</span></div>
+                            <small class="text-muted" style="font-size: 0.65rem;"><span sec:authentication="principal.authorities[0].authority">Rol</span></small>
+                        </div>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <form th:action="@{/logout}" method="post" class="m-0 p-0">
+                                <button type="submit" class="dropdown-item text-danger border-0 bg-transparent" style="cursor:pointer;">
+                                    <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Body -->
+        <div class="container-fluid p-4">
+            <div class="mb-4">
+                <h2 class="fw-extrabold text-white mb-1">Editar Perfil de Jugador</h2>
+                <p class="text-secondary mb-0" style="font-size: 0.9rem;">
+                    Modifique los campos y estadísticas para actualizar el registro en el sistema MARS.
+                </p>
+            </div>
+
+            <!-- Error Message -->
+            <div th:if="${error}" class="alert alert-danger border-0 rounded-1 mb-4" style="background-color: #2a1515; color: #ff6b6b;" th:text="${error}">
+                Error
+            </div>
+
+            <!-- Form Card -->
+            <form th:action="@{/scouting/admin/jugadores/editar/{id}(id=${jugador.id})}" method="post">
+                <!-- Datos del Jugador -->
+                <div class="card p-4 mb-4">
+                    <h5 class="fw-bold text-info mb-3"><i class="bi bi-person-badge-fill me-2"></i>Datos del Jugador</h5>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="nombre" class="form-label text-light fw-medium small">Nombre Completo</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ej. Lionel Messi" th:value="${jugador.nombre}" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="edad" class="form-label text-light fw-medium small">Edad</label>
+                            <input type="number" class="form-control" id="edad" name="edad" placeholder="Ej. 25" min="15" max="45" th:value="${jugador.edad}" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="nacionalidad" class="form-label text-light fw-medium small">Nacionalidad</label>
+                            <input type="text" class="form-control" id="nacionalidad" name="nacionalidad" placeholder="Ej. Argentina" th:value="${jugador.nacionalidad}" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="posicion" class="form-label text-light fw-medium small">Posición Táctica</label>
+                            <select class="form-select" id="posicion" name="posicion" required>
+                                <option value="" disabled selected>Seleccionar...</option>
+                                <option th:each="pos : ${positions}" th:value="${pos}" th:text="${pos}" th:selected="${pos == jugador.posicion}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="clubId" class="form-label text-light fw-medium small">Club</label>
+                            <select class="form-select" id="clubId" name="clubId" required>
+                                <option value="" disabled selected>Seleccionar club...</option>
+                                <option th:each="club : ${clubes}" th:value="${club.id}" th:text="${club.nombre}" th:selected="${jugador.club != null and club.id == jugador.club.id}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="valorMercado" class="form-label text-light fw-medium small">Valor de Mercado (€)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent border-secondary text-secondary">€</span>
+                                <input type="number" class="form-control" id="valorMercado" name="valorMercado" placeholder="Ej. 50000000" step="100000" min="0" th:value="${jugador.valorMercado}" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estadísticas Base -->
+                <div class="card p-4 mb-4">
+                    <h5 class="fw-bold text-warning mb-3"><i class="bi bi-bar-chart-fill me-2"></i>Estadísticas Base (Temporada)</h5>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="goles" class="form-label text-light fw-medium small">Goles</label>
+                            <input type="number" class="form-control" id="goles" name="goles" placeholder="Ej. 15" min="0" th:value="${estadistica.goles}" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="pasesExitosos" class="form-label text-light fw-medium small">Pases Exitosos</label>
+                            <input type="number" class="form-control" id="pasesExitosos" name="pasesExitosos" placeholder="Ej. 850" min="0" th:value="${estadistica.pasesExitosos}" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="minutos" class="form-label text-light fw-medium small">Minutos Jugados</label>
+                            <input type="number" class="form-control" id="minutos" name="minutos" placeholder="Ej. 2800" min="0" th:value="${estadistica.minutos}" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="rating" class="form-label text-light fw-medium small">Rating Promedio</label>
+                            <input type="number" class="form-control" id="rating" name="rating" placeholder="Ej. 8.2" step="0.1" min="0" max="10" th:value="${estadistica.rating}" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estadísticas Detalladas -->
+                <div class="card p-4 mb-4">
+                    <h5 class="fw-bold text-success mb-3"><i class="bi bi-speedometer2 me-2"></i>Estadísticas Detalladas (KPIs Avanzados)</h5>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="velocidadPunta" class="form-label text-light fw-medium small">Velocidad Punta (km/h)</label>
+                            <input type="number" class="form-control" id="velocidadPunta" name="velocidadPunta" placeholder="Ej. 34.5" step="0.1" min="0" th:value="${detStats.velocidadPunta}" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="expectedGoals" class="form-label text-light fw-medium small">Expected Goals (xG)</label>
+                            <input type="number" class="form-control" id="expectedGoals" name="expectedGoals" placeholder="Ej. 12.5" step="0.1" min="0" th:value="${detStats.expectedGoals}" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="duelosDefensivos" class="form-label text-light fw-medium small">Duelos Def</label>
+                            <input type="number" class="form-control" id="duelosDefensivos" name="duelosDefensivos" placeholder="Ej. 85" min="0" th:value="${detStats.duelosDefensivos}" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="pasesUltimoTercio" class="form-label text-light fw-medium small">Pases U. Tercio</label>
+                            <input type="number" class="form-control" id="pasesUltimoTercio" name="pasesUltimoTercio" placeholder="Ej. 120" min="0" th:value="${detStats.pasesUltimoTercio}" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="atajadas" class="form-label text-light fw-medium small">Atajadas</label>
+                            <input type="number" class="form-control" id="atajadas" name="atajadas" placeholder="Ej. 0" min="0" th:value="${detStats.atajadas}" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex gap-3">
+                    <button type="submit" class="btn btn-primary px-5 py-2 fw-bold text-uppercase" style="letter-spacing: 0.05em;">
+                        <i class="bi bi-save-fill me-2"></i>Guardar Cambios
+                    </button>
+                    <a th:href="@{/scouting/admin/jugadores}" class="btn btn-outline-secondary px-4 py-2">
+                        <i class="bi bi-x-circle me-1"></i>Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
