@@ -40,6 +40,11 @@ public class AdminController {
     @GetMapping("/jugadores")
     public String listarJugadores(Model model) {
         List<Jugador> jugadores = jugadorRepository.findAll();
+        java.util.Map<Long, Estadistica> statsMap = estadisticaRepository.findAll().stream()
+                .collect(java.util.stream.Collectors.toMap(s -> s.getJugador().getId(), s -> s, (s1, s2) -> s1));
+        for (Jugador j : jugadores) {
+            j.setEstadistica(statsMap.get(j.getId()));
+        }
         model.addAttribute("jugadores", jugadores);
         return "scouting/admin/jugadores";
     }

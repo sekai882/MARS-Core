@@ -6,6 +6,7 @@ import com.mars.core.model.Jugador;
 import com.mars.core.model.Position;
 import com.mars.core.model.Estadistica;
 import com.mars.core.repository.ClubRepository;
+import com.mars.core.repository.EstadisticaRepository;
 import com.mars.core.services.IMARSService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -26,10 +27,12 @@ public class ScoutingController {
 
     private final IMARSService marsService;
     private final ClubRepository clubRepository;
+    private final EstadisticaRepository estadisticaRepository;
 
-    public ScoutingController(IMARSService marsService, ClubRepository clubRepository) {
+    public ScoutingController(IMARSService marsService, ClubRepository clubRepository, EstadisticaRepository estadisticaRepository) {
         this.marsService = marsService;
         this.clubRepository = clubRepository;
+        this.estadisticaRepository = estadisticaRepository;
     }
 
     @GetMapping
@@ -47,8 +50,10 @@ public class ScoutingController {
         }
         // Llamada al nuevo motor de analítica avanzado que recibe FiltroComplejoDTO
         List<Jugador> jugadores = marsService.executeScouting(form);
+        java.util.Map<Long, Estadistica> statsMap = estadisticaRepository.findAll().stream()
+                .collect(java.util.stream.Collectors.toMap(s -> s.getJugador().getId(), s -> s, (s1, s2) -> s1));
         for (Jugador j : jugadores) {
-            j.setEstadistica(marsService.getPlayerStats(j.getId()));
+            j.setEstadistica(statsMap.get(j.getId()));
         }
         model.addAttribute("jugadoresRecomendados", jugadores);
         return "scouting/dashboard";

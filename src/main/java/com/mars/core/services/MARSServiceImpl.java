@@ -76,20 +76,10 @@ public class MARSServiceImpl implements IMARSService {
         this.detailedStatsRepository = detailedStatsRepository;
     }
 
-    @Override
-    public Double calculateIEM(Long jugadorId) {
-        Jugador jugador = jugadorRepository.findById(jugadorId).orElse(null);
-        if (jugador == null || jugador.getValorMercado() == null || jugador.getValorMercado() == 0) {
+    private Double calculateIEM(Jugador jugador, Estadistica stats) {
+        if (jugador == null || jugador.getValorMercado() == null || jugador.getValorMercado() == 0 || stats == null) {
             return 0.0;
         }
-
-        List<Estadistica> statsList = estadisticaRepository.findByJugadorId(jugadorId);
-        if (statsList == null || statsList.isEmpty()) {
-            return 0.0;
-        }
-
-        Estadistica stats = statsList.get(0);
-        
         int goles = stats.getGoles();
         int pases = stats.getPasesExitosos();
         int minutos = stats.getMinutos();
@@ -99,13 +89,24 @@ public class MARSServiceImpl implements IMARSService {
     }
 
     @Override
+    public Double calculateIEM(Long jugadorId) {
+        Jugador jugador = jugadorRepository.findById(jugadorId).orElse(null);
+        if (jugador == null) return 0.0;
+        List<Estadistica> statsList = estadisticaRepository.findByJugadorId(jugadorId);
+        Estadistica stats = (statsList != null && !statsList.isEmpty()) ? statsList.get(0) : null;
+        return calculateIEM(jugador, stats);
+    }
+
+    @Override
     public List<Jugador> executeScouting(Double budget, Position pos) {
         List<Jugador> jugadores = jugadorRepository.findAll();
+        Map<Long, Estadistica> statsMap = estadisticaRepository.findAll().stream()
+                .collect(Collectors.toMap(s -> s.getJugador().getId(), s -> s, (s1, s2) -> s1));
 
         return jugadores.stream()
                 .filter(j -> j.getPosicion() == pos)
                 .filter(j -> j.getValorMercado() != null && j.getValorMercado() <= budget)
-                .sorted((j1, j2) -> Double.compare(calculateIEM(j2.getId()), calculateIEM(j1.getId())))
+                .sorted((j1, j2) -> Double.compare(calculateIEM(j2, statsMap.get(j2.getId())), calculateIEM(j1, statsMap.get(j1.getId()))))
                 .limit(5)
                 .collect(Collectors.toList());
     }
@@ -166,10 +167,12 @@ public class MARSServiceImpl implements IMARSService {
 
         // 2. Estructura interna para almacenar DominanceScore por candidato
         Map<Long, Double> dominanceScores = new HashMap<>();
+        Map<Long, EstadisticaDetallada> detailedMap = detailedStatsRepository.findAll().stream()
+                .collect(Collectors.toMap(d -> d.getJugador().getId(), d -> d, (d1, d2) -> d1));
 
         // 3. Bucle Externo (for) que recorra la lista de candidatos prefiltrados
         for (Jugador cand : candidatos) {
-            EstadisticaDetallada statsCand = detailedStatsRepository.findByJugadorId(cand.getId()).orElse(null);
+            EstadisticaDetallada statsCand = detailedMap.get(cand.getId());
             double velCand = (statsCand != null && statsCand.getVelocidadPunta() != null) ? statsCand.getVelocidadPunta() : 0.0;
             double xGCand = (statsCand != null && statsCand.getExpectedGoals() != null) ? statsCand.getExpectedGoals() : 0.0;
             int duelosCand = (statsCand != null && statsCand.getDuelosDefensivos() != null) ? statsCand.getDuelosDefensivos() : 0;
@@ -179,7 +182,7 @@ public class MARSServiceImpl implements IMARSService {
 
             // 4. Bucle Interno (for) que recorra la lista completa de todos los jugadores del sistema que jueguen en esa misma posición
             for (Jugador par : pares) {
-                EstadisticaDetallada statsPar = detailedStatsRepository.findByJugadorId(par.getId()).orElse(null);
+                EstadisticaDetallada statsPar = detailedMap.get(par.getId());
                 double velPar = (statsPar != null && statsPar.getVelocidadPunta() != null) ? statsPar.getVelocidadPunta() : 0.0;
                 double xGPar = (statsPar != null && statsPar.getExpectedGoals() != null) ? statsPar.getExpectedGoals() : 0.0;
                 int duelosPar = (statsPar != null && statsPar.getDuelosDefensivos() != null) ? statsPar.getDuelosDefensivos() : 0;
@@ -320,10 +323,13 @@ public class MARSServiceImpl implements IMARSService {
                 .filter(j -> clubId == 0L || (j.getClub() != null && j.getClub().getId().equals(clubId)))
                 .collect(Collectors.toList());
 
+        Map<Long, Estadistica> statsMap = estadisticaRepository.findAll().stream()
+                .collect(Collectors.toMap(s -> s.getJugador().getId(), s -> s, (s1, s2) -> s1));
+
         // Mapa para almacenar los scores ajustados con el bonus de química
         Map<Long, Double> scores = new HashMap<>();
         for (Jugador j : jugadores) {
-            scores.put(j.getId(), calculateIEM(j.getId()));
+            scores.put(j.getId(), calculateIEM(j, statsMap.get(j.getId())));
         }
 
         // Bucle anidado para comparar nacionalidades y aplicar el bonus de química del 5%
