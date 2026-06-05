@@ -415,8 +415,39 @@
                             </p>
                         </div>
                     </div>
+                </div> <!-- End Results row -->
+
+            <!--Joyas -->
+            <div class="row" th:if="${topJoyas != null and !topJoyas.isEmpty()}">
+                <div class="col-12">
+                    <h5 class="mb-3 text-white">Top 5 Joyas Históricas (Búsquedas Globales)</h5>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-striped table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Nombre Jugador</th>
+                                    <th>Club</th>
+                                    <th>Búsquedas</th>
+                                    <th>IEM Máximo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="joya, stat : ${topJoyas}">
+                                    <td th:text="${stat.count}">1</td>
+                                    <td>
+                                        <a th:href="@{/scouting/analisis/{id}(id=${joya.jugador.id})}" class="text-info text-decoration-none" th:text="${joya.jugador.nombre}">Jugador</a>
+                                    </td>
+                                    <td th:text="${joya.jugador.club != null ? joya.jugador.club.nombre : 'Agente Libre'}">Club</td>
+                                    <td th:text="${joya.busquedas}">10</td>
+                                    <td th:text="${#numbers.formatDecimal(joya.maxIem, 1, 'POINT', 2, 'COMMA')}">7.5</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
+
         </div>
     </div>
 

@@ -192,3 +192,4 @@ SELECT setval('club_id_seq', (SELECT MAX(id) FROM club));
 SELECT setval('jugador_id_seq', (SELECT MAX(id) FROM jugador));
 SELECT setval('estadistica_id_seq', (SELECT MAX(id) FROM estadistica));
 SELECT setval('estadistica_detallada_id_seq', (SELECT MAX(id) FROM estadistica_detallada));
+
