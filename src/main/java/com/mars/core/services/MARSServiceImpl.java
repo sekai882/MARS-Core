@@ -8,25 +8,37 @@ import com.mars.core.dto.FiltroComplejoDTO;
 import com.mars.core.repository.JugadorRepository;
 import com.mars.core.repository.EstadisticaRepository;
 import com.mars.core.repository.EstadisticaDetalladaRepository;
+import com.mars.core.services.strategy.IPositionalScoutingStrategy;
+import com.mars.core.services.strategy.ScoutingStrategyFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.stream.Collectors;
 
+/**
+ * Fachada analítica de alto nivel del motor MARS-Core (Facade Pattern).
+ * Coordina los componentes inyectados (repositorios, factoría de estrategias)
+ * para orquestar los flujos de scouting, cálculo del IEM y sugerencia del Mejor XI.
+ * Todas las dependencias se resuelven mediante interfaces abstractas (DIP).
+ */
 @Service
 public class MARSServiceImpl implements IMARSService {
 
     private final JugadorRepository jugadorRepository;
     private final EstadisticaRepository estadisticaRepository;
     private final EstadisticaDetalladaRepository detailedStatsRepository;
+    private final ScoutingStrategyFactory strategyFactory;
 
-    // Configuración de pesos relativos según la posición
+    /**
+     * Configuración de pesos relativos según la posición táctica.
+     * Cada mapa interior asocia el nombre de una métrica con su peso ponderado [0.0-1.0].
+     */
     private static final Map<Position, Map<String, Double>> PESOS_POSICIONALES = new HashMap<>();
 
     static {
-        // EXTREMO: velocidad (0.3), pasesUltimoTercio (0.3), xG (0.4)
         Map<String, Double> pesosExtremo = new HashMap<>();
         pesosExtremo.put("velocidad", 0.3);
         pesosExtremo.put("pases", 0.3);
@@ -34,7 +46,6 @@ public class MARSServiceImpl implements IMARSService {
         pesosExtremo.put("xG", 0.4);
         PESOS_POSICIONALES.put(Position.EXTREMO, pesosExtremo);
 
-        // DELANTERO: velocidad (0.2), pasesUltimoTercio (0.1), xG (0.7)
         Map<String, Double> pesosDelantero = new HashMap<>();
         pesosDelantero.put("velocidad", 0.2);
         pesosDelantero.put("pases", 0.1);
@@ -42,7 +53,6 @@ public class MARSServiceImpl implements IMARSService {
         pesosDelantero.put("xG", 0.7);
         PESOS_POSICIONALES.put(Position.DELANTERO, pesosDelantero);
 
-        // PIVOTE: velocidad (0.1), pasesUltimoTercio (0.4), duelosDefensivos (0.5)
         Map<String, Double> pesosPivote = new HashMap<>();
         pesosPivote.put("velocidad", 0.1);
         pesosPivote.put("pases", 0.4);
@@ -50,7 +60,6 @@ public class MARSServiceImpl implements IMARSService {
         pesosPivote.put("xG", 0.0);
         PESOS_POSICIONALES.put(Position.PIVOTE, pesosPivote);
 
-        // DEFENSA: velocidad (0.2), duelosDefensivos (0.8)
         Map<String, Double> pesosDefensa = new HashMap<>();
         pesosDefensa.put("velocidad", 0.2);
         pesosDefensa.put("pases", 0.0);
@@ -58,7 +67,6 @@ public class MARSServiceImpl implements IMARSService {
         pesosDefensa.put("xG", 0.0);
         PESOS_POSICIONALES.put(Position.DEFENSA, pesosDefensa);
 
-        // PORTERO: atajadas (0.8), pases (0.2)
         Map<String, Double> pesosPortero = new HashMap<>();
         pesosPortero.put("velocidad", 0.0);
         pesosPortero.put("pases", 0.2);
@@ -68,12 +76,14 @@ public class MARSServiceImpl implements IMARSService {
         PESOS_POSICIONALES.put(Position.PORTERO, pesosPortero);
     }
 
-    public MARSServiceImpl(JugadorRepository jugadorRepository, 
+    public MARSServiceImpl(JugadorRepository jugadorRepository,
                             EstadisticaRepository estadisticaRepository,
-                            EstadisticaDetalladaRepository detailedStatsRepository) {
+                            EstadisticaDetalladaRepository detailedStatsRepository,
+                            ScoutingStrategyFactory strategyFactory) {
         this.jugadorRepository = jugadorRepository;
         this.estadisticaRepository = estadisticaRepository;
         this.detailedStatsRepository = detailedStatsRepository;
+        this.strategyFactory = strategyFactory;
     }
 
     @Override
@@ -87,20 +97,15 @@ public class MARSServiceImpl implements IMARSService {
         double rating = stats.getRating() != null ? stats.getRating() : 0.0;
 
         double rendimiento = (goles * 50.0) + (pases * 2.0) + (minutos * 0.5) + (rating * 100.0);
-        
-        // Validación defensiva para prevenir indeterminaciones matemáticas (Infinity/NaN) en el cálculo logarítmico del costo financiero.
+
         double logPrecio = Math.log10(jugador.getValorMercado());
         if (logPrecio <= 0) logPrecio = 1.0;
-        
+
         double iemBase = rendimiento / logPrecio;
-        double iemScaled = iemBase / 100.0; 
-        
-        /* 
-         * Acotamiento de fronteras absolutas para garantizar la normalización matemática de la escala.
-         * Math.max asegura un suelo estricto de 0.0, mientras que Math.min impone un techo de 10.0.
-         */
+        double iemScaled = iemBase / 100.0;
+
         double iemFinal = Math.min(10.0, Math.max(0.0, iemScaled));
-        
+
         return Math.round(iemFinal * 100.0) / 100.0;
     }
 
@@ -127,15 +132,16 @@ public class MARSServiceImpl implements IMARSService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Ejecuta el motor de scouting avanzado con filtros complejos y Matriz de Dominancia Competitiva.
+     * Delega la resolución posicional de KPIs a la factoría de estrategias (Strategy + Factory Method),
+     * eliminando la bifurcación condicional por posición.
+     */
     @Override
     public List<Jugador> executeScouting(FiltroComplejoDTO filtro) {
-        String clubName = (filtro.getClub() != null && !filtro.getClub().isEmpty()) ? filtro.getClub() : "Todos los Clubes";
-        System.out.println("DEBUG: Iniciando matriz de dominancia competitiva para el club: " + clubName);
-
         List<Jugador> todos = jugadorRepository.findAllEager();
-        List<Jugador> candidatos = new java.util.ArrayList<>();
+        List<Jugador> candidatos = new ArrayList<>();
 
-        // 1. Filtra primero los jugadores por posición y presupuesto máximo en un bucle inicial
         for (Jugador jugador : todos) {
             if (jugador.getPosicion() != filtro.getPosition()) {
                 continue;
@@ -143,8 +149,7 @@ public class MARSServiceImpl implements IMARSService {
             if (jugador.getValorMercado() != null && jugador.getValorMercado() > filtro.getBudget()) {
                 continue;
             }
-            
-            // Opcional: Filtro dinámico opcional por nacionalidad
+
             if (filtro.getNacionalidad() != null && !filtro.getNacionalidad().equals("todas") && !filtro.getNacionalidad().isEmpty()) {
                 String nac = jugador.getNacionalidad().toLowerCase();
                 if (filtro.getNacionalidad().equals("es") && !nac.contains("esp")) continue;
@@ -153,11 +158,10 @@ public class MARSServiceImpl implements IMARSService {
                 if (filtro.getNacionalidad().equals("ar") && !nac.contains("arg")) continue;
             }
 
-            // Filtro de edad real
             if (filtro.getEdad() != null && !filtro.getEdad().isEmpty() && !filtro.getEdad().equals("todas")) {
                 String ageFilter = filtro.getEdad();
                 int edad = jugador.getEdad() != null ? jugador.getEdad() : 0;
-                
+
                 if (ageFilter.equals("sub21")) {
                     if (edad < 16 || edad > 21) continue;
                 } else if (ageFilter.equals("madurez")) {
@@ -166,69 +170,34 @@ public class MARSServiceImpl implements IMARSService {
                     if (edad < 27) continue;
                 }
             }
-            
+
             candidatos.add(jugador);
         }
 
-        // Obtener todos los pares competitivos
-        List<Jugador> pares = new java.util.ArrayList<>();
+        List<Jugador> pares = new ArrayList<>();
         for (Jugador jugador : todos) {
             if (jugador.getPosicion() == filtro.getPosition()) {
                 pares.add(jugador);
             }
         }
 
+        IPositionalScoutingStrategy strategy = strategyFactory.getStrategy(filtro.getPosition());
         int totalPares = pares.size();
-        int kpisEvaluados = (filtro.getPosition() == Position.PORTERO) ? 2 : 4; // PORTERO evalúa 2 métricas, los demás 4
+        int kpisEvaluados = strategy.getKpiCount();
 
-        // Resolución de la Matriz de Dominancia Competitiva: Búsqueda bidimensional O(N*M)
         Map<Long, Double> dominanceScores = new HashMap<>();
         Map<Long, EstadisticaDetallada> detailedMap = detailedStatsRepository.findAll().stream()
                 .collect(Collectors.toMap(d -> d.getJugador().getId(), d -> d, (d1, d2) -> d1));
 
-        /* 
-         * Bucle Externo: Itera sobre la lista de candidatos que superaron los filtros del usuario.
-         * Cada iteración representa al sujeto de estudio actual a evaluar.
-         */
         for (Jugador cand : candidatos) {
             EstadisticaDetallada statsCand = detailedMap.get(cand.getId());
-            double velCand = (statsCand != null && statsCand.getVelocidadPunta() != null) ? statsCand.getVelocidadPunta() : 0.0;
-            double xGCand = (statsCand != null && statsCand.getExpectedGoals() != null) ? statsCand.getExpectedGoals() : 0.0;
-            int duelosCand = (statsCand != null && statsCand.getDuelosDefensivos() != null) ? statsCand.getDuelosDefensivos() : 0;
-            int pasesCand = (statsCand != null && statsCand.getPasesUltimoTercio() != null) ? statsCand.getPasesUltimoTercio() : 0;
-
             int victoryCount = 0;
 
-            /* 
-             * Bucle Interno: Cruce de comparación de KPIs relativos contra el grupo de control posicional (pares).
-             * Computa cuántos duelos individuales gana el candidato frente a todos los competidores de la liga en su posición.
-             */
             for (Jugador par : pares) {
                 EstadisticaDetallada statsPar = detailedMap.get(par.getId());
-                double velPar = (statsPar != null && statsPar.getVelocidadPunta() != null) ? statsPar.getVelocidadPunta() : 0.0;
-                double xGPar = (statsPar != null && statsPar.getExpectedGoals() != null) ? statsPar.getExpectedGoals() : 0.0;
-                int duelosPar = (statsPar != null && statsPar.getDuelosDefensivos() != null) ? statsPar.getDuelosDefensivos() : 0;
-                int pasesPar = (statsPar != null && statsPar.getPasesUltimoTercio() != null) ? statsPar.getPasesUltimoTercio() : 0;
-
-                /* 
-                 * Bifurcación polimórfica posicional:
-                 * El flujo discrimina de forma estricta las métricas de portería (atajadas y pases largos) 
-                 * de los atributos escalares de jugadores de campo (velocidad, xG, duelos).
-                 */
-                if (filtro.getPosition() == Position.PORTERO) {
-                    int atajadasCand = (statsCand != null && statsCand.getAtajadas() != null) ? statsCand.getAtajadas() : 0;
-                    int atajadasPar = (statsPar != null && statsPar.getAtajadas() != null) ? statsPar.getAtajadas() : 0;
-                    if (atajadasCand > atajadasPar) victoryCount++;
-                    if (pasesCand > pasesPar) victoryCount++;
-                } else {
-                    if (velCand > velPar) victoryCount++;
-                    if (xGCand > xGPar) victoryCount++;
-                    if (duelosCand > duelosPar) victoryCount++;
-                    if (pasesCand > pasesPar) victoryCount++;
-                }
+                victoryCount += strategy.calculateDominancePoints(statsCand, statsPar);
             }
 
-            // Cálculo del porcentaje final de dominancia de mercado
             double score = 0.0;
             if (totalPares > 0) {
                 score = (double) victoryCount / (totalPares * kpisEvaluados);
@@ -237,12 +206,15 @@ public class MARSServiceImpl implements IMARSService {
             cand.setDominanceScore(score);
         }
 
-        // 7. Ordena la lista final de forma descendente y retorna los 5 mejores
         candidatos.sort((j1, j2) -> Double.compare(dominanceScores.getOrDefault(j2.getId(), 0.0), dominanceScores.getOrDefault(j1.getId(), 0.0)));
 
         return candidatos.stream().limit(5).collect(Collectors.toList());
     }
 
+    /**
+     * Calcula el score posicional ponderado delegando a la estrategia correspondiente
+     * mediante la factoría de resolución (Factory Method + Strategy).
+     */
     @Override
     public Double calculatePositionalScore(Long jugadorId) {
         Jugador jugador = jugadorRepository.findById(jugadorId).orElse(null);
@@ -261,35 +233,8 @@ public class MARSServiceImpl implements IMARSService {
             return 0.0;
         }
 
-        double score = 0.0;
-        double vel = detStats.getVelocidadPunta() != null ? detStats.getVelocidadPunta() : 0.0;
-        double pases = detStats.getPasesUltimoTercio() != null ? detStats.getPasesUltimoTercio() : 0.0;
-        double duelos = detStats.getDuelosDefensivos() != null ? detStats.getDuelosDefensivos() : 0.0;
-        double xG = detStats.getExpectedGoals() != null ? detStats.getExpectedGoals() : 0.0;
-
-        // Estructura switch-case requerida para aplicar pesos e IEM
-        switch (pos) {
-            case EXTREMO:
-                score = (vel * pesos.get("velocidad")) + (pases * pesos.get("pases")) + (xG * pesos.get("xG"));
-                break;
-            case DELANTERO:
-                score = (vel * pesos.get("velocidad")) + (pases * pesos.get("pases")) + (xG * pesos.get("xG"));
-                break;
-            case PIVOTE:
-                score = (vel * pesos.get("velocidad")) + (pases * pesos.get("pases")) + (duelos * pesos.get("duelos"));
-                break;
-            case DEFENSA:
-                score = (vel * pesos.get("velocidad")) + (duelos * pesos.get("duelos"));
-                break;
-            case PORTERO:
-                double atajadas = detStats.getAtajadas() != null ? detStats.getAtajadas() : 0.0;
-                score = (atajadas * pesos.get("atajadas")) + (pases * pesos.get("pases"));
-                break;
-            default:
-                score = 0.0;
-        }
-
-        return score;
+        IPositionalScoutingStrategy strategy = strategyFactory.getStrategy(pos);
+        return strategy.calculatePositionalScore(detStats, pos, pesos);
     }
 
     @Override
@@ -318,14 +263,14 @@ public class MARSServiceImpl implements IMARSService {
         int edadFutura = jugador.getEdad() + años;
         double factorEdad = getAgeFactor(edadFutura);
         Double iem = calculateIEM(jugadorId);
-        
+
         double performanceBonus = (iem * 0.03) * años;
         if (edadFutura >= 35) {
             performanceBonus = 0.0;
         } else if (edadFutura >= 31) {
             performanceBonus *= 0.15;
         }
-        
+
         return (valorMercado * factorEdad) * (1.0 + performanceBonus);
     }
 
@@ -361,40 +306,31 @@ public class MARSServiceImpl implements IMARSService {
         Map<Long, Estadistica> statsMap = estadisticaRepository.findAll().stream()
                 .collect(Collectors.toMap(s -> s.getJugador().getId(), s -> s, (s1, s2) -> s1));
 
-        // Mapa para almacenar los scores ajustados con el bonus de química
         Map<Long, Double> scores = new HashMap<>();
         for (Jugador j : jugadores) {
             scores.put(j.getId(), calculateIEM(j, statsMap.get(j.getId())));
         }
 
-        // Bucle anidado para comparar nacionalidades y aplicar el bonus de química del 5%
         for (int i = 0; i < jugadores.size(); i++) {
             Jugador j1 = jugadores.get(i);
             for (int k = i + 1; k < jugadores.size(); k++) {
                 Jugador j2 = jugadores.get(k);
 
-                boolean mismaNac = j1.getNacionalidad() != null && 
+                boolean mismaNac = j1.getNacionalidad() != null &&
                                    j1.getNacionalidad().equalsIgnoreCase(j2.getNacionalidad());
-                
+
                 boolean esDefensaYPivote = (j1.getPosicion() == Position.DEFENSA && j2.getPosicion() == Position.PIVOTE)
                         || (j1.getPosicion() == Position.PIVOTE && j2.getPosicion() == Position.DEFENSA);
 
                 if (mismaNac && esDefensaYPivote) {
-                    // Sinergia: Incrementar su score conjunto en 5%
                     scores.put(j1.getId(), scores.get(j1.getId()) * 1.05);
                     scores.put(j2.getId(), scores.get(j2.getId()) * 1.05);
                 }
             }
         }
 
-        // Ordenar por score ajustado descendentemente
         jugadores.sort((j1, j2) -> Double.compare(scores.get(j2.getId()), scores.get(j1.getId())));
 
-        // Retornar los mejores jugadores
         return jugadores.stream().limit(11).collect(Collectors.toList());
     }
-
-
-
-
 }
