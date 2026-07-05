@@ -1,0 +1,121 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121e;
+  --bg-card: rgba(20, 20, 35, 0.7);
+  --border-color: rgba(138, 43, 226, 0.25);
+  --accent-purple: #8a2be2;
+  --accent-cyan: #00ffff;
+  --accent-red: #ff3366;
+  --text-main: #e2e8f0;
+  --text-muted: #94a3b8;
+  --glow-shadow: 0 0 20px rgba(138, 43, 226, 0.2);
+
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-primary);
+  background-image: 
+    radial-gradient(at 10% 20%, rgba(138, 43, 226, 0.15) 0px, transparent 50%),
+    radial-gradient(at 90% 80%, rgba(0, 255, 255, 0.1) 0px, transparent 50%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+#root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Glassmorphism Cards */
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+}
+
+.glass-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(0, 255, 255, 0.4);
+  box-shadow: 0 10px 30px rgba(138, 43, 226, 0.3);
+}
+
+/* Pulsing Badge for IEM */
+.iem-badge {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+  color: #fff;
+  border-radius: 8px;
+  padding: 6px 12px;
+  display: inline-block;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.35);
+  animation: pulse-glow 2.5s infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+  }
+}
+
+/* Custom Table Styles */
+.custom-table {
+  background: var(--bg-card);
+  color: var(--text-main);
+  border-collapse: separate;
+  border-spacing: 0 10px;
+}
+
+.custom-table th {
+  border: none;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 1.5px;
+  padding: 15px;
+}
+
+.custom-table tbody tr {
+  background: rgba(25, 25, 45, 0.5);
+  transition: transform 0.2s;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.custom-table tbody tr:hover {
+  background: rgba(35, 35, 60, 0.8);
+  transform: scale(1.01);
+}
+
+.custom-table td {
+  padding: 15px;
+  vertical-align: middle;
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.custom-table td:first-child {
+  border-left: 1px solid var(--border-color);
+  border-radius: 12px 0 0 12px;
+}
+
+.custom-table td:last-child {
+  border-right: 1px solid var(--border-color);
+  border-radius: 0 12px 12px 0;
+}
