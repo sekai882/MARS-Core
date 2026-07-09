@@ -47,6 +47,11 @@ public class ScoutingController {
         return "scouting/dashboard";
     }
 
+    @GetMapping("/joyas-react")
+    public String joyasReact() {
+        return "scouting/joyas-react";
+    }
+
     @PostMapping("/search")
     public String search(@ModelAttribute("scoutingForm") @Valid FiltroComplejoDTO form, BindingResult result, Model model) {
         model.addAttribute("positions", Position.values());
