@@ -311,6 +311,7 @@
     <!-- Babel standalone component definition -->
     <script type="text/babel" th:inline="none">
     /*<![CDATA[*/
+        // [DESACOPLAMIENTO ARQUITECTÓNICO] - Consumo asíncrono de Web API pura desde un componente reactivo React 19 (Enfoque CDN).
         const { useState, useEffect } = React;
 
         function App() {
@@ -319,6 +320,7 @@
             const [error, setError] = useState(null);
             const [refreshing, setRefreshing] = useState(false);
 
+            // [OFFLOADING COMPUTACIONAL] - El servidor solo despacha el JSON ligero (~500 bytes); el navegador del cliente asume el costo de procesamiento gráfico y ordenamiento.
             const fetchTopGems = async () => {
                 try {
                     setError(null);
@@ -475,6 +477,7 @@
                             </h4>
                             
                             <div className="row g-4 mb-5">
+                                {/* [RENDERIZADO REACTIVO DECLARATIVO] - Sustituye ciclos imperativos tradicionales (for) por mapeo inmutable del DOM Virtual usando llaves únicas de persistencia (key=gem.id). */}
                                 {gems.map((gem, idx) => (
                                     <div key={gem.id} className="col-12 col-md-6 col-lg-4">
                                         <div className="glass-card p-4 position-relative overflow-hidden h-100 d-flex flex-column justify-content-between" style={{ minHeight: '300px' }}>
