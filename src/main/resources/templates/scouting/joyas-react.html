@@ -195,10 +195,6 @@
             to { transform: rotate(360deg); }
         }
     </style>
-    <!-- React 18.3.1 & Babel Stable UMD CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.12/babel.min.js"></script>
 </head>
 <body>
 
@@ -304,6 +300,11 @@
         </div>
     </div>
 
+    <!-- React 18.3.1 & Babel Stable UMD CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.12/babel.min.js"></script>
+
     <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
@@ -359,20 +360,17 @@
                 fetchTopGems();
             };
 
-            const formatCurrency = (val) => {
-                if (val === null || val === undefined) return "$0";
-                return new Intl.NumberFormat('es-ES', {
-                    style: 'currency',
-                    currency: 'EUR',
-                    maximumFractionDigits: 0
-                }).format(val);
-            };
+            const formatCurrency = (val) => val ? '$' + Number(val).toLocaleString() : '$0';
 
             const getIemColorClass = (iem) => {
                 if (iem >= 8.5) return 'text-info';
                 if (iem >= 7.0) return 'text-success';
                 return 'text-warning';
             };
+
+            if (!loading && gems.length === 0) {
+                return <div className="text-white p-4 text-center">No se encontraron joyas analíticas registradas.</div>;
+            }
 
             return (
                 <div className="container-fluid p-4">
@@ -489,7 +487,7 @@
                             <div className="row g-4 mb-5">
                                 {/* [RENDERIZADO REACTIVO DECLARATIVO] - Sustituye ciclos imperativos tradicionales (for) por mapeo inmutable del DOM Virtual usando llaves únicas de persistencia (key=gem.id). */}
                                 {gems.map((gem, idx) => (
-                                    <div key={gem.id} className="col-12 col-md-6 col-lg-4">
+                                    <div key={gem?.id} className="col-12 col-md-6 col-lg-4">
                                         <div className="glass-card p-4 position-relative overflow-hidden h-100 d-flex flex-column justify-content-between" style={{ minHeight: '300px' }}>
                                             <div className="position-absolute top-0 end-0 bg-dark border-bottom border-start border-secondary px-3 py-1 text-info fw-bold" style={{ fontSize: '0.8rem', borderBottomLeftRadius: '12px' }}>
                                                 Rank #{idx + 1}
@@ -497,24 +495,24 @@
                                             
                                             <div>
                                                 <div className="mb-3">
-                                                    <h4 className="fw-bold text-white m-0 pe-5 text-truncate">{gem.nombre}</h4>
+                                                    <h4 className="fw-bold text-white m-0 pe-5 text-truncate">{gem?.nombre}</h4>
                                                     <span className="badge bg-secondary text-info text-uppercase mt-1" style={{ fontSize: '0.75rem' }}>
-                                                        {gem.posicion}
+                                                        {gem?.posicion}
                                                     </span>
                                                 </div>
 
                                                 <div className="d-flex flex-column gap-2 mb-4">
                                                     <div className="d-flex align-items-center gap-2 text-muted small">
                                                         <i className="bi bi-shield text-info"></i>
-                                                        <span className="text-truncate">Club: <strong>{gem.club}</strong></span>
+                                                        <span className="text-truncate">Club: <strong>{gem?.club}</strong></span>
                                                     </div>
                                                     <div className="d-flex align-items-center gap-2 text-muted small">
                                                         <i className="bi bi-currency-euro text-info"></i>
-                                                        <span>Valor: <strong>{formatCurrency(gem.costo ? gem.costo : 0)}</strong></span>
+                                                        <span>Valor: <strong>{formatCurrency(gem?.costo ? gem.costo : 0)}</strong></span>
                                                     </div>
                                                     <div className="d-flex align-items-center gap-2 text-muted small">
                                                         <i className="bi bi-eye text-info"></i>
-                                                        <span>Simulaciones: <strong>{(gem.busquedas || 0)} búsquedas</strong></span>
+                                                        <span>Simulaciones: <strong>{(gem?.busquedas || 0)} búsquedas</strong></span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -522,7 +520,7 @@
                                             <div className="bg-dark p-3 rounded-3 d-flex justify-content-between align-items-center border border-secondary">
                                                 <span className="small text-muted fw-bold">MARS-IEM</span>
                                                 <div className="iem-badge">
-                                                    {gem.iem ? gem.iem.toFixed(2) : "0.00"}
+                                                    {gem?.iem ? Number(gem.iem).toFixed(2) : "0.00"}
                                                 </div>
                                             </div>
                                         </div>
@@ -556,7 +554,7 @@
                                             </thead>
                                             <tbody>
                                                 {gems.map((gem, idx) => (
-                                                    <tr key={gem.id}>
+                                                    <tr key={gem?.id}>
                                                         <td>
                                                             <span className="fw-bold text-info">#{idx + 1}</span>
                                                         </td>
@@ -565,25 +563,25 @@
                                                                 <div className="p-2 bg-dark rounded-circle border border-secondary d-flex align-items-center justify-content-center">
                                                                     <i className="bi bi-person text-info"></i>
                                                                 </div>
-                                                                <span className="fw-bold text-white">{gem.nombre}</span>
+                                                                <span className="fw-bold text-white">{gem?.nombre}</span>
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <span className="text-uppercase small fw-bold text-muted">{gem.posicion}</span>
+                                                            <span className="text-uppercase small fw-bold text-muted">{gem?.posicion}</span>
                                                         </td>
                                                         <td>
-                                                            <span>{gem.club}</span>
+                                                            <span>{gem?.club}</span>
                                                         </td>
                                                         <td className="text-end fw-bold text-white">
-                                                            {formatCurrency(gem.costo ? gem.costo : 0)}
+                                                            {formatCurrency(gem?.costo ? gem.costo : 0)}
                                                         </td>
                                                         <td className="text-center">
-                                                            <span className={`fw-bold ${getIemColorClass(gem.iem || 0)}`}>
-                                                                {gem.iem ? gem.iem.toFixed(2) : "0.00"}
+                                                            <span className={`fw-bold ${getIemColorClass(gem?.iem || 0)}`}>
+                                                                {gem?.iem ? Number(gem.iem).toFixed(2) : "0.00"}
                                                             </span>
                                                         </td>
                                                         <td className="text-center text-muted">
-                                                            {gem.busquedas}
+                                                            {gem?.busquedas}
                                                         </td>
                                                     </tr>
                                                 ))}
