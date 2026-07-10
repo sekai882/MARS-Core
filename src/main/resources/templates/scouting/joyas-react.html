@@ -302,6 +302,7 @@
 
     <!-- Babel standalone component definition -->
     <script type="text/babel" th:inline="none">
+    /*<![CDATA[*/
         const { useState, useEffect } = React;
 
         function App() {
@@ -584,6 +585,7 @@
 
         const root = ReactDOM.createRoot(document.getElementById('react-root'));
         root.render(<App />);
+    /*]]>*/
     </script>
 </body>
 </html>
